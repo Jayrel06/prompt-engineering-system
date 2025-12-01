@@ -501,3 +501,90 @@ Decision: [Worth it? / Not worth it?]
 **Optimal examples:** 2-4 for few-shot
 
 **Cost multiplier:** 1.5x-5x depending on technique
+---
+
+## Example Output
+
+### Task
+"I need to decide whether to build a custom analytics dashboard or use an existing third-party solution for my SaaS product. We have 5,000 users and limited engineering resources."
+
+### Complete Chain-of-Thought Output
+
+Let me work through this decision step-by-step:
+
+**Step 1: Identify the key factors**
+- Current situation: 5,000 users, limited engineering resources
+- Decision: Custom build vs. third-party solution
+- What matters: Cost, time to implement, maintenance burden, flexibility, scalability
+
+**Step 2: Evaluate custom build option**
+- Pros:
+  - Complete control over features
+  - Can match exact brand and UX
+  - No recurring licensing fees
+  - Data stays on our servers
+- Cons:
+  - Requires 2-3 months of engineering time (estimated)
+  - Ongoing maintenance and bug fixes
+  - Diverts resources from core product features
+  - Need to build features that already exist elsewhere
+
+**Step 3: Evaluate third-party solution**
+- Pros:
+  - Implementation in 1-2 weeks
+  - Professionally maintained
+  - Regular updates and new features
+  - Proven at scale
+  - Team can focus on core product
+- Cons:
+  - Monthly cost (~$500-2000 depending on service)
+  - Less customization flexibility
+  - Data might be hosted externally
+  - Vendor lock-in risk
+
+**Step 4: Calculate opportunity cost**
+- Custom build: 2-3 months engineering time
+- Engineering cost: ~$30,000-45,000 (assuming $15k/month loaded cost)
+- Third-party cost: ~$12,000-24,000 per year
+- Custom build payback period: 1.25-3.75 years
+
+**Step 5: Consider strategic priorities**
+- Is analytics dashboard our competitive advantage? No—our core value is [product feature]
+- Will custom analytics help us acquire/retain users? Unlikely—standard analytics suffice
+- Do we have spare engineering capacity? No—we have a feature backlog
+- Is time-to-market important? Yes—we need this functionality soon
+
+**Step 6: Assess risk factors**
+- Custom build risks: Scope creep, longer than estimated, maintenance burden grows
+- Third-party risks: Price increases, service discontinuation, integration issues
+- Risk mitigation: Choose established vendor with good track record, negotiate multi-year pricing
+
+**Step 7: Make recommendation**
+Based on this analysis, I recommend the third-party solution because:
+1. Faster time-to-value (1-2 weeks vs 2-3 months)
+2. Lower initial cost and predictable expenses
+3. Allows engineering to focus on core product differentiation
+4. Professional maintenance and feature updates
+5. Proven scalability for our user base
+
+The custom build would make sense if:
+- Analytics were our primary product feature
+- We had excess engineering capacity
+- We required very unique/specialized analytics
+- We planned to scale to 100K+ users soon (changing economics)
+
+**Final Answer:** Choose a third-party analytics solution, specifically evaluating Mixpanel, Amplitude, or PostHog based on feature fit and pricing for 5,000 users.
+
+### Why This Works
+
+1. **Structured thinking**: The step-by-step approach ensures all important factors are considered systematically rather than relying on gut feeling alone.
+
+2. **Transparent reasoning**: Anyone reviewing this decision can see exactly how we arrived at the conclusion and challenge specific steps if needed.
+
+3. **Quantitative analysis**: By calculating opportunity costs and payback periods, we make the decision more objective and defensible.
+
+4. **Risk awareness**: Explicitly considering what could go wrong with each option helps prepare contingencies.
+
+5. **Conditional reasoning**: By stating when the opposite choice would make sense, we show we understand the nuances and can revisit if circumstances change.
+
+6. **Actionable conclusion**: The recommendation is specific enough to act on, with clear next steps (evaluate specific vendors).

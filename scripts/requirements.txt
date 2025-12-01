@@ -15,3 +15,10 @@ python-dotenv>=1.0.0
 # Additional dependencies that may be useful
 # numpy - Required by sentence-transformers (usually auto-installed)
 # torch - Required by sentence-transformers (usually auto-installed)
+
+# Tiktoken - Token counting for OpenAI models
+# Provides accurate token counting for GPT and O1 models
+tiktoken>=0.5.0
+
+# Cache Manager - Optional Redis support for distributed caching
+# redis>=5.0.0  # Uncomment for Redis backend (optional)

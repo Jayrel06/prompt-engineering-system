@@ -1,0 +1,31 @@
+Task: Generate a comprehensive product comparison table for project management software
+
+Context:
+- Target audience: Small business owners (5-50 employees) evaluating PM tools
+- Purpose: Help decision-making for first-time PM software purchase
+- Current situation: Team using email and spreadsheets, needs better collaboration
+
+Format:
+- Markdown table with the following columns: Tool Name, Price (monthly), Key Features, Best For, Limitations
+- Include 5 popular tools: Asana, Trello, Monday.com, ClickUp, Notion
+- Add a summary paragraph after the table (100-150 words)
+
+Requirements:
+- Must include accurate pricing for small teams (5-10 users)
+- Focus on ease of use and learning curve
+- Highlight collaboration features
+- Must note free tier availability
+- Keep feature descriptions concise (5-7 words each)
+
+Example row:
+| Trello | $5/user | Kanban boards, card-based workflow | Visual thinkers, simple projects | Limited reporting features |
+
+Constraints:
+- No promotional language or bias
+- Prices should be current as of 2024
+- Focus on core features, not advanced/enterprise options
+- Professional, neutral tone
+
+Edge cases to consider:
+- Mention if tool has mobile apps
+- Note any storage limitations on free tiers

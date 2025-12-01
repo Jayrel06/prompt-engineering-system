@@ -1,0 +1,3 @@
+Write something about AI.
+
+Format: [Please specify: JSON, markdown, plain text, etc.]

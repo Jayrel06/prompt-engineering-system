@@ -1,0 +1,214 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   SMART CONTEXT SELECTION - CHEAT SHEET                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ QUICK START ──────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Install:  pip install sentence-transformers tiktoken                       │
+│                                                                              │
+│  Basic:    python scripts/smart_context.py --task "YOUR_TASK"               │
+│                                                                              │
+│  Test:     python scripts/test_smart_context.py                             │
+│                                                                              │
+│  Examples: python scripts/smart_context_example.py                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ COMMON COMMANDS ──────────────────────────────────────────────────────────┐
+│                                                                              │
+│  # Simple task context                                                      │
+│  python scripts/smart_context.py --task "Design new workflow"               │
+│                                                                              │
+│  # With token limit                                                         │
+│  python scripts/smart_context.py --task "Debug API" --max-tokens 4000       │
+│                                                                              │
+│  # Top 5 most relevant                                                      │
+│  python scripts/smart_context.py --task "Write docs" --top-n 5              │
+│                                                                              │
+│  # Include git context                                                      │
+│  python scripts/smart_context.py --task "Continue dev" --include-dynamic    │
+│                                                                              │
+│  # Technical work with boost                                                │
+│  python scripts/smart_context.py --task "Fix auth" --boost technical=0.5    │
+│                                                                              │
+│  # Export to file                                                           │
+│  python scripts/smart_context.py --task "Plan feature" -o context.md        │
+│                                                                              │
+│  # Debug mode                                                               │
+│  python scripts/smart_context.py --task "..." --verbose --show-scores       │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ KEY PARAMETERS ───────────────────────────────────────────────────────────┐
+│                                                                              │
+│  --task TEXT              Your task description (REQUIRED)                  │
+│  --max-tokens INT         Token budget (default: 8000)                      │
+│  --top-n INT             Max number of files                                │
+│  --min-score FLOAT       Min relevance 0-1 (default: 0.1)                   │
+│  --boost-category TEXT   Boost category (format: category=boost)            │
+│  --include-dynamic       Add git/file context                               │
+│  --show-scores          Show relevance scores                               │
+│  --output PATH          Output file (default: stdout)                       │
+│  --verbose              Debug mode                                          │
+│  --no-cache             Disable cache                                       │
+│  --clear-cache          Clear old cache entries                             │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ USE CASES ────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Quick task:                                                                │
+│    smart_context.py --task "YOUR_TASK"                                      │
+│                                                                              │
+│  Strict budget:                                                             │
+│    smart_context.py --task "..." --max-tokens 2000 --min-score 0.3          │
+│                                                                              │
+│  Domain-specific:                                                           │
+│    smart_context.py --task "..." --boost technical=0.5 --boost infra=0.3    │
+│                                                                              │
+│  Continue work:                                                             │
+│    smart_context.py --task "..." --include-dynamic --top-n 5                │
+│                                                                              │
+│  Comprehensive:                                                             │
+│    smart_context.py --task "..." --max-tokens 10000 --min-score 0.05        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CATEGORIES FOR BOOSTING ──────────────────────────────────────────────────┐
+│                                                                              │
+│  identity          Core values, communication style, expertise              │
+│  technical         Infrastructure, tools, coding standards                  │
+│  business          Service offerings, target markets                        │
+│  framework         Thinking frameworks (planning, analysis, etc.)           │
+│  template          Document templates                                       │
+│                                                                              │
+│  Boost values:                                                              │
+│    0.2-0.3  = Slight preference                                             │
+│    0.4-0.5  = Strong preference                                             │
+│    0.6-1.0  = Very strong preference                                        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ TOKEN BUDGET GUIDELINES ──────────────────────────────────────────────────┐
+│                                                                              │
+│  Short prompts:     --max-tokens 2000-4000                                  │
+│  Medium prompts:    --max-tokens 4000-6000                                  │
+│  Long prompts:      --max-tokens 6000-10000                                 │
+│                                                                              │
+│  Remember to leave room for:                                                │
+│    - Your task/question                                                     │
+│    - Model's response                                                       │
+│    - Dynamic context (if enabled)                                           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ PYTHON API ───────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  from smart_context import (                                                │
+│      SemanticScorer, discover_context_files,                                │
+│      score_relevance, select_context                                        │
+│  )                                                                           │
+│                                                                              │
+│  scorer = SemanticScorer()                                                  │
+│  chunks = discover_context_files()                                          │
+│  scored = score_relevance("Your task", chunks, scorer)                      │
+│  selected = select_context(scored, max_tokens=5000)                         │
+│                                                                              │
+│  for chunk in selected:                                                     │
+│      print(f"{chunk.source}: {chunk.relevance_score:.3f}")                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ TROUBLESHOOTING ──────────────────────────────────────────────────────────┐
+│                                                                              │
+│  "sentence-transformers not available"                                      │
+│    → pip install sentence-transformers                                      │
+│    → Still works with keyword matching (less accurate)                      │
+│                                                                              │
+│  Slow first run                                                             │
+│    → Normal (loading model + computing embeddings)                          │
+│    → Subsequent runs are faster (~3x speedup)                               │
+│                                                                              │
+│  No context selected                                                        │
+│    → Lower --min-score to 0.05                                              │
+│    → Increase --max-tokens                                                  │
+│    → Use broader task description                                           │
+│                                                                              │
+│  Too much/little context                                                    │
+│    → Adjust --max-tokens, --top-n, or --min-score                           │
+│                                                                              │
+│  Token count inaccurate                                                     │
+│    → pip install tiktoken                                                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ PERFORMANCE ──────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  First run (cold):  ~7-13 seconds                                           │
+│  Cached run:        ~2-3 seconds                                            │
+│  Speedup:           3-5x                                                    │
+│                                                                              │
+│  Cache location:    scripts/__pycache__/embeddings_cache/                   │
+│                                                                              │
+│  Clear cache:       python scripts/smart_context.py --clear-cache           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ FILES CREATED ────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Core:                                                                      │
+│    smart_context.py             Main implementation (23 KB)                 │
+│    smart_prompt.py              Integration wrapper (9 KB)                  │
+│                                                                              │
+│  Testing:                                                                   │
+│    test_smart_context.py        31 comprehensive tests (15 KB)              │
+│    smart_context_example.py     9 interactive examples (15 KB)              │
+│                                                                              │
+│  Documentation:                                                             │
+│    SMART_CONTEXT_README.md      Complete docs (13 KB)                       │
+│    SMART_CONTEXT_INTEGRATION.md Integration guide (15 KB)                   │
+│    SMART_CONTEXT_QUICKSTART.md  Quick start (8 KB)                          │
+│    SMART_CONTEXT_SUMMARY.md     Overview (11 KB)                            │
+│    SMART_CONTEXT_CHEATSHEET.txt This file                                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ INTEGRATION WITH context-loader.py ───────────────────────────────────────┐
+│                                                                              │
+│  Replace context-loader:                                                    │
+│    OLD: python scripts/context-loader.py --mode technical --task "Debug"    │
+│    NEW: python scripts/smart_context.py --task "Debug" --boost tech=0.5     │
+│                                                                              │
+│  Hybrid approach:                                                           │
+│    python scripts/smart_prompt.py --strategy hybrid --mode technical \      │
+│           --task "Debug API issues"                                         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ QUICK REFERENCE ──────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Basic:       smart_context.py --task "..."                                 │
+│  Budget:      smart_context.py --task "..." --max-tokens 4000               │
+│  Top files:   smart_context.py --task "..." --top-n 5                       │
+│  Boost:       smart_context.py --task "..." --boost technical=0.5           │
+│  Dynamic:     smart_context.py --task "..." --include-dynamic               │
+│  Export:      smart_context.py --task "..." -o file.md                      │
+│  Debug:       smart_context.py --task "..." --verbose --show-scores         │
+│  Test:        python scripts/test_smart_context.py                          │
+│  Examples:    python scripts/smart_context_example.py                       │
+│  Docs:        See SMART_CONTEXT_QUICKSTART.md                               │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ NEXT STEPS ───────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  1. Install:  pip install sentence-transformers tiktoken                    │
+│  2. Test:     python scripts/test_smart_context.py                          │
+│  3. Try:      python scripts/smart_context.py --task "Test"                 │
+│  4. Read:     SMART_CONTEXT_QUICKSTART.md                                   │
+│  5. Explore:  python scripts/smart_context_example.py                       │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Version: 1.0.0  |  Date: 2024-12-01  |  Status: Production-ready ✓
+Location: C:/Users/JRiel/prompt-engineering-system/scripts/

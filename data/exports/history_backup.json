@@ -1,0 +1,93 @@
+[
+  {
+    "id": 7,
+    "prompt": "Explain machine learning in simple terms",
+    "output": "Response to: Explain machine learning in simple terms...",
+    "timestamp": "2025-12-01T14:17:45.581604",
+    "framework_used": "zero-shot",
+    "template_used": null,
+    "model": "gpt-4",
+    "tokens": 14,
+    "cost": null,
+    "tags": "auto-tracked",
+    "metadata": "{\"auto_tracked\": true, \"timestamp\": \"2025-12-01T14:17:45.581594\"}"
+  },
+  {
+    "id": 6,
+    "prompt": "\nPlease review the following code:\n\n```python\ndef calculate_sum(numbers):\n    total = 0\n    for num in numbers:\n        total += num\n    return total\n```\n\nProvide feedback on:\n1. Code quality\n2. Performance\n3. Best practices\n4. Suggestions for improvement\n",
+    "output": "\nCode Review:\n\n1. Code Quality: The code is clear and readable.\n\n2. Performance: Good for small lists. For very large lists, consider using sum().\n\n3. Best practices:\n   - Add docstring\n   - Add type hints\n   - Handle edge cases (empty list, non-numeric values)\n\n4. Suggestions:\n```python\ndef calculate_sum(numbers: list[float]) -> float:\n    '''Calculate the sum of numbers in a list.'''\n    if not numbers:\n        return 0.0\n    return sum(numbers)\n```\n",
+    "timestamp": "2025-12-01T14:17:45.570978",
+    "framework_used": "structured-output",
+    "template_used": "code-review",
+    "model": "gpt-4",
+    "tokens": 320,
+    "cost": 0.0096,
+    "tags": "code-review,python,quality",
+    "metadata": "{\"language\": \"python\", \"review_aspects\": [\"quality\", \"performance\", \"best-practices\"], \"template_version\": \"1.0\"}"
+  },
+  {
+    "id": 5,
+    "prompt": "\nClassify the sentiment of the following text as positive, negative, or neutral.\n\nExample 1:\nText: \"I love this product!\"\nSentiment: positive\n\nExample 2:\nText: \"This is the worst experience ever.\"\nSentiment: negative\n\nExample 3:\nText: \"The item arrived on time.\"\nSentiment: neutral\n\nNow classify:\nText: \"Amazing quality and fast shipping!\"\nSentiment:\n",
+    "output": "positive",
+    "timestamp": "2025-12-01T14:17:45.565496",
+    "framework_used": "few-shot",
+    "template_used": "sentiment-classification",
+    "model": "claude-3-sonnet",
+    "tokens": 125,
+    "cost": 0.0025,
+    "tags": "sentiment-analysis,classification,few-shot",
+    "metadata": "{\"examples_count\": 3, \"task\": \"sentiment_classification\", \"accuracy\": \"high\"}"
+  },
+  {
+    "id": 4,
+    "prompt": "\nLet's solve this step by step:\n\nQuestion: If a train travels 120 miles in 2 hours, what is its average speed?\n\nThink through this carefully.\n",
+    "output": "\nStep 1: Identify the given information\n- Distance: 120 miles\n- Time: 2 hours\n\nStep 2: Recall the speed formula\nSpeed = Distance / Time\n\nStep 3: Calculate\nSpeed = 120 miles / 2 hours = 60 miles per hour\n\nAnswer: The train's average speed is 60 mph.\n",
+    "timestamp": "2025-12-01T14:17:45.560202",
+    "framework_used": "chain-of-thought",
+    "template_used": null,
+    "model": "gpt-4-turbo",
+    "tokens": 150,
+    "cost": 0.0045,
+    "tags": "math,problem-solving,education",
+    "metadata": "{\"difficulty\": \"easy\", \"steps\": 3, \"subject\": \"physics\"}"
+  },
+  {
+    "id": 3,
+    "prompt": "What is the capital of France?",
+    "output": "The capital of France is Paris.",
+    "timestamp": "2025-12-01T14:17:45.553699",
+    "framework_used": null,
+    "template_used": null,
+    "model": "gpt-4",
+    "tokens": null,
+    "cost": null,
+    "tags": "geography,education",
+    "metadata": "{}"
+  },
+  {
+    "id": 2,
+    "prompt": "What is quantum computing?",
+    "output": "Quantum computing uses quantum mechanics principles to perform calculations",
+    "timestamp": "2025-12-01T14:17:26.882894",
+    "framework_used": "zero-shot",
+    "template_used": null,
+    "model": "claude-3-opus",
+    "tokens": 200,
+    "cost": 0.006,
+    "tags": "science,quantum,physics",
+    "metadata": "{}"
+  },
+  {
+    "id": 1,
+    "prompt": "Explain machine learning",
+    "output": "Machine learning is a subset of AI that enables systems to learn from data",
+    "timestamp": "2025-12-01T14:17:20.152458",
+    "framework_used": "zero-shot",
+    "template_used": null,
+    "model": "gpt-4",
+    "tokens": 150,
+    "cost": 0.0045,
+    "tags": "AI,education,ML",
+    "metadata": "{}"
+  }
+]

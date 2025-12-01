@@ -1,0 +1,210 @@
+================================================================================
+                    TOKEN COUNTER - QUICK START CARD
+================================================================================
+
+INSTALLATION
+------------
+pip install tiktoken  # For accurate OpenAI counting
+
+
+COMMAND LINE
+------------
+# Basic usage
+python token_counter.py --text "Your prompt" --model gpt-4o
+
+# From file with limit check
+python token_counter.py --file prompt.txt --check-limit --output-tokens 2000
+
+# Cost estimate
+python token_counter.py --text "prompt" --model claude-3-5-sonnet-20241022 --output-tokens 1000
+
+# List models
+python token_counter.py --list-models
+
+# Model info
+python token_counter.py --model-info gpt-4o
+
+# JSON output
+python token_counter.py --text "prompt" --model gpt-4 --json
+
+# Truncate if needed
+python token_counter.py --file large.txt --truncate --model gpt-4
+
+
+PYTHON API - BASIC
+------------------
+from token_counter import count_tokens, estimate_cost
+
+tokens = count_tokens("Your text", "gpt-4o")
+cost = estimate_cost(1000, 500, "claude-3-5-sonnet-20241022")
+
+
+PYTHON API - RECOMMENDED (validate_before_send)
+------------------------------------------------
+from token_counter import validate_before_send
+
+# This is the main integration point!
+is_valid, info = validate_before_send(
+    prompt="Your complete prompt here",
+    model="gpt-4o",
+    max_output_tokens=2000
+)
+
+if is_valid:
+    print(f"Safe! Cost: ${info.cost_estimate:.4f}")
+    # Send to API
+else:
+    print(f"Too long by {abs(info.remaining_tokens)} tokens")
+
+
+PYTHON API - COMPLETE EXAMPLE
+------------------------------
+from token_counter import validate_before_send, get_model_info
+
+def safe_api_call(prompt, model="gpt-4o", max_output=2000):
+    # Validate first
+    is_valid, info = validate_before_send(prompt, model, max_output)
+
+    if not is_valid:
+        raise ValueError(
+            f"Prompt exceeds limit by {abs(info.remaining_tokens)} tokens"
+        )
+
+    # Log info
+    print(f"Tokens: {info.input_tokens}, Cost: ${info.cost_estimate:.4f}")
+
+    # Call your API here
+    # response = your_llm_api(prompt, model)
+
+    return info
+
+# Use it
+try:
+    result = safe_api_call("Explain AI", "claude-3-5-sonnet-20241022")
+except ValueError as e:
+    print(f"Error: {e}")
+
+
+TRUNCATION
+----------
+from token_counter import truncate_to_fit
+
+# Auto-truncate if too long
+safe_prompt = truncate_to_fit(
+    long_prompt,
+    model="gpt-4",
+    output_tokens=1000,
+    truncate_from="end"  # or "start" or "middle"
+)
+
+
+BEST MODELS (Dec 2025)
+----------------------
+Name                          Input    Output   Context
+gpt-4o-mini                  $0.15    $0.60    128K    <- Cheapest OpenAI
+claude-3-haiku               $0.25    $1.25    200K    <- Cheapest Claude
+gemini-1.5-flash             $0.075   $0.30    1M      <- Cheapest overall
+gpt-4o                       $2.50    $10.00   128K    <- Best OpenAI
+claude-3.5-sonnet-20241022   $3.00    $15.00   200K    <- Best Claude
+o1-mini                      $3.00    $12.00   128K    <- Reasoning
+gpt-4-turbo                  $10.00   $30.00   128K
+claude-3-opus                $15.00   $75.00   200K    <- Most capable
+o1                           $15.00   $60.00   200K    <- Advanced reasoning
+
+(Prices per 1M tokens)
+
+
+KEY FUNCTIONS
+-------------
+count_tokens(text, model) -> int
+estimate_cost(input_tokens, output_tokens, model) -> float
+check_limits(tokens, model, output_tokens) -> (bool, int)
+truncate_to_fit(text, model, max_tokens, output_tokens) -> str
+validate_before_send(prompt, model, max_output) -> (bool, TokenCount)
+get_model_info(model) -> dict
+list_supported_models() -> list
+
+
+TOKEN COUNT DATACLASS
+---------------------
+TokenCount:
+  - input_tokens: int
+  - output_tokens_estimate: int
+  - total: int
+  - model: str
+  - cost_estimate: float
+  - within_limit: bool
+  - remaining_tokens: int
+
+
+FILES
+-----
+token_counter.py              - Main utility (804 lines)
+test_token_counter.py         - Test suite (373 lines)
+token_counter_examples.py     - 7 examples (318 lines)
+TOKEN_COUNTER_GUIDE.md        - Full documentation
+TOKEN_COUNTER_README.md       - Quick reference
+TOKEN_COUNTER_QUICKSTART.txt  - This file
+
+
+TESTING
+-------
+python test_token_counter.py           # Run test suite
+python token_counter_examples.py       # Run examples
+
+
+COMMON PATTERNS
+---------------
+
+1. Pre-flight check:
+   python token_counter.py --file prompt.txt --check-limit --model gpt-4
+
+2. Cost estimation:
+   from token_counter import estimate_cost
+   cost = estimate_cost(10000, 2000, "gpt-4o")
+
+3. Auto-truncate:
+   from token_counter import truncate_to_fit
+   safe = truncate_to_fit(long_text, "gpt-4", output_tokens=1000)
+
+4. Batch processing:
+   from token_counter import count_tokens, estimate_cost
+   total_cost = sum(estimate_cost(count_tokens(p, m), 500, m) for p in prompts)
+
+5. Model selection:
+   from token_counter import estimate_cost
+   cheapest = min(models, key=lambda m: estimate_cost(tokens, 500, m))
+
+
+INTEGRATION CHECKLIST
+---------------------
+[ ] Install tiktoken
+[ ] Import validate_before_send
+[ ] Add validation before API calls
+[ ] Handle over-limit errors
+[ ] Log costs
+[ ] Test with realistic prompts
+[ ] Set up auto-truncation if needed
+[ ] Update pricing periodically
+
+
+TIPS
+----
+- Always use validate_before_send() before API calls
+- Budget for output tokens (reserve space)
+- Use cheaper models for simple tasks
+- Monitor costs in production
+- Update pricing data monthly
+- Install tiktoken for accuracy
+
+
+SUPPORT
+-------
+See TOKEN_COUNTER_GUIDE.md for full documentation
+See TOKEN_COUNTER_README.md for detailed reference
+Run token_counter_examples.py for integration examples
+
+
+================================================================================
+                         Created: 2025-12-01
+================================================================================

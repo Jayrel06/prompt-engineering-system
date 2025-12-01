@@ -1,0 +1,80 @@
+id,prompt,output,timestamp,framework_used,template_used,model,tokens,cost,tags,metadata
+7,Explain machine learning in simple terms,Response to: Explain machine learning in simple terms...,2025-12-01T14:17:45.581604,zero-shot,,gpt-4,14,,auto-tracked,"{""auto_tracked"": true, ""timestamp"": ""2025-12-01T14:17:45.581594""}"
+6,"
+Please review the following code:
+
+```python
+def calculate_sum(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    return total
+```
+
+Provide feedback on:
+1. Code quality
+2. Performance
+3. Best practices
+4. Suggestions for improvement
+","
+Code Review:
+
+1. Code Quality: The code is clear and readable.
+
+2. Performance: Good for small lists. For very large lists, consider using sum().
+
+3. Best practices:
+   - Add docstring
+   - Add type hints
+   - Handle edge cases (empty list, non-numeric values)
+
+4. Suggestions:
+```python
+def calculate_sum(numbers: list[float]) -> float:
+    '''Calculate the sum of numbers in a list.'''
+    if not numbers:
+        return 0.0
+    return sum(numbers)
+```
+",2025-12-01T14:17:45.570978,structured-output,code-review,gpt-4,320,0.0096,"code-review,python,quality","{""language"": ""python"", ""review_aspects"": [""quality"", ""performance"", ""best-practices""], ""template_version"": ""1.0""}"
+5,"
+Classify the sentiment of the following text as positive, negative, or neutral.
+
+Example 1:
+Text: ""I love this product!""
+Sentiment: positive
+
+Example 2:
+Text: ""This is the worst experience ever.""
+Sentiment: negative
+
+Example 3:
+Text: ""The item arrived on time.""
+Sentiment: neutral
+
+Now classify:
+Text: ""Amazing quality and fast shipping!""
+Sentiment:
+",positive,2025-12-01T14:17:45.565496,few-shot,sentiment-classification,claude-3-sonnet,125,0.0025,"sentiment-analysis,classification,few-shot","{""examples_count"": 3, ""task"": ""sentiment_classification"", ""accuracy"": ""high""}"
+4,"
+Let's solve this step by step:
+
+Question: If a train travels 120 miles in 2 hours, what is its average speed?
+
+Think through this carefully.
+","
+Step 1: Identify the given information
+- Distance: 120 miles
+- Time: 2 hours
+
+Step 2: Recall the speed formula
+Speed = Distance / Time
+
+Step 3: Calculate
+Speed = 120 miles / 2 hours = 60 miles per hour
+
+Answer: The train's average speed is 60 mph.
+",2025-12-01T14:17:45.560202,chain-of-thought,,gpt-4-turbo,150,0.0045,"math,problem-solving,education","{""difficulty"": ""easy"", ""steps"": 3, ""subject"": ""physics""}"
+3,What is the capital of France?,The capital of France is Paris.,2025-12-01T14:17:45.553699,,,gpt-4,,,"geography,education",{}
+2,What is quantum computing?,Quantum computing uses quantum mechanics principles to perform calculations,2025-12-01T14:17:26.882894,zero-shot,,claude-3-opus,200,0.006,"science,quantum,physics",{}
+1,Explain machine learning,Machine learning is a subset of AI that enables systems to learn from data,2025-12-01T14:17:20.152458,zero-shot,,gpt-4,150,0.0045,"AI,education,ML",{}
