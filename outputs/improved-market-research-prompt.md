@@ -607,6 +607,149 @@ import Spline from '@splinetool/react-spline/next';
 
 ---
 
+---
+
+## Visual Design Trends 2024-2025
+
+### Skeuomorphism Comeback ("Liquid Glass")
+
+Apple's iOS 26 introduces "Liquid Glass" - skeuomorphism reimagined:
+- **What it is**: Digital interfaces that mimic real-world materials (glass, metal, depth)
+- **Why now**: Ultra-high resolution screens, advanced GPUs, user fatigue with flat design
+- **Examples**: Photos icon mimics "layered stained glass", Camera app returns high-res lens illustration
+- **SaaS Applications**: Fintech dashboards, productivity apps, meditation apps
+
+**Sources**:
+- [Apple's Liquid Glass Design](https://www.techradar.com/phones/iphone/apples-new-liquid-glass-design-puts-the-spotlight-on-skeuomorphism-for-the-first-time-since-ios-6-and-im-all-for-it)
+- [Skeuomorphism Comeback 2025](https://kryzalid.net/en/web-marketing-blog/skeuomorphism-an-unexpected-comeback-in-2025/)
+- [Rise of Skeuomorphic Minimalism](https://uiverse.io/blog/the-rise-of-skeumorphic-minimalism-ui-designs-unexpected-comeback-in-2025)
+
+### Claymorphism (3D Clay UI)
+
+Soft, inflated 3D shapes with pastel colors - coined by Michal Malewicz (Hype4):
+
+**CSS Implementation**:
+```css
+.claymorphism {
+  background: linear-gradient(145deg, #e6f0ff, #d1e3ff);
+  border-radius: 40px;
+  box-shadow:
+    /* Outer shadow */
+    8px 8px 20px rgba(0, 0, 0, 0.15),
+    /* Inner highlight (top-left) */
+    inset -4px -4px 8px rgba(255, 255, 255, 0.6),
+    /* Inner shadow (bottom-right) */
+    inset 4px 4px 8px rgba(0, 0, 0, 0.05);
+}
+```
+
+**Key Properties**:
+- Border radius: ~40% of button height
+- Two inner shadows (top-left lighter, bottom-right darker)
+- Pastel/bright colors only (dark colors kill the effect)
+- Subtle gradient fill (top lighter than bottom)
+
+**Resources**:
+- [Claymorphism Generator](https://hype4.academy/tools/claymorphism-generator)
+- [clay.css Library](https://codeadrian.github.io/clay.css/)
+- [LogRocket Tutorial](https://blog.logrocket.com/implementing-claymorphism-css/)
+
+### Bento Grid Layout
+
+Japanese lunchbox-inspired compartmentalized design - the 2024 golden standard:
+
+**Who Uses It**:
+- Apple (iPhone product pages)
+- Linear (feature introductions)
+- Microsoft
+
+**Why It Works for SaaS**:
+- Organizes complex features without overwhelming
+- Easy responsive adaptation
+- Seamlessly integrates images, text, audio, video
+- Perfect for dashboards and landing pages
+
+**Resources**:
+- [BentoGrids.com](https://bentogrids.com/) - Curated collection
+- [SaaS Bento Examples](https://saaslandingpage.com/tag/bento-style/)
+- [SaaSFrame Bento Analysis](https://www.saasframe.io/blog/the-bento-layout-trend)
+
+### Glassmorphism (Frosted Glass)
+
+Translucent frosted glass effect with blur:
+
+**Tailwind CSS Implementation**:
+```html
+<div class="backdrop-blur-md bg-white/30 border border-white/20 rounded-lg shadow-lg p-6">
+  <h2 class="text-xl font-semibold">Glass Card</h2>
+  <p class="text-gray-800">Frosted glass effect with Tailwind</p>
+</div>
+```
+
+**Key Classes**:
+- `backdrop-blur-md` or `backdrop-blur-lg` - frosted effect
+- `bg-white/30` - transparent white background
+- `border border-white/20` - subtle border
+- Custom: `backdrop-blur-[10px]`
+
+**Generators**:
+- [Tailwind Glassmorphism Generator](https://tailwindcss-glassmorphism.vercel.app/)
+- [Gradienty Generator](https://gradienty.codes/tailwind-glassmorphism-generator)
+- [CSS Glassmorphism Generator](https://notchtools.com/css-glassmorphism-generator)
+
+### Aurora Gradient Backgrounds
+
+Northern lights animated gradient effect:
+
+**React + Tailwind (Performance-Optimized)**:
+```jsx
+// Uses CSS-only animation - no JS calculations
+// Respects prefers-reduced-motion
+// Smooth 60fps with GPU acceleration
+```
+
+**Key Technique**:
+- `background-size: 400% 400%`
+- Animate `background-position` over 15-60 seconds
+- CSS blend modes: `hard-light`, `screen`, `overlay`
+- Five independent orbs with different animation paths
+
+**Component Libraries**:
+- [Aceternity UI Aurora](https://ui.aceternity.com/components/aurora-background)
+- [shadcn/ui Aurora](https://www.shadcn.io/background/aurora)
+- [Auroral CSS Library](https://github.com/LunarLogic/auroral)
+- [CodePen CSS-Only Aurora](https://codepen.io/Ahmod-Musa/pen/emNqPQd)
+
+---
+
+## Competitor Visual Audit Results (December 2024)
+
+Based on analysis of 7 PT clinic software competitors:
+
+| Competitor | Hero Visual | Background | 3D | Animation |
+|------------|-------------|------------|-----|-----------|
+| WebPT | Product screenshot | Light blue | ❌ | Fade-in |
+| Cliniko | Illustration | White | ❌ | None |
+| SimplePractice | Product screenshot | Gradient | ❌ | Subtle |
+| Jane App | Product screenshot | Light | ❌ | Fade-in |
+| Hint | Lifestyle photo | White | ❌ | None |
+| Healthie | Product screenshot | Light blue | ❌ | Fade-in |
+| IntakeQ | Product screenshot | White | ❌ | None |
+
+**Gap Opportunities**:
+- **3D Elements**: 0/7 competitors use 3D
+- **Dark Mode**: 0/7 use dark backgrounds
+- **Bold Animations**: 6/7 use only subtle fade-ins
+- **Glassmorphism**: 0/7 use glass effects
+
+**Differentiation Strategy**:
+- Use 3D floating geometry (Spline or React Three Fiber)
+- Dark background (#0f172a) with cyan accent (#06b6d4)
+- Bold animations (parallax, stagger reveals, 3D rotation)
+- Glassmorphic cards for pricing/features
+
+---
+
 ## Files Cleaned Up
 
 Removed unnecessary backup files:
