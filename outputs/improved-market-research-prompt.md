@@ -480,3 +480,139 @@ Do NOT:
 | Generic "research" | **Audit framework** for competitors |
 
 The output isn't "what makes good design" - it's **"here's exactly what to add and where to get it."**
+
+---
+
+## Research Findings (Verified December 2024)
+
+### Premium SaaS Hero Patterns Analyzed
+
+#### Linear.app
+- **Visual Type**: 3D animated hero with detailed UI animation
+- **Implementation**: Next.js + Tailwind + Framer Motion
+- **Key Feature**: Hero animates on load, rotates in response to cursor
+- **Open Source Clone**: [github.com/frontendfyi/rebuilding-linear.app](https://github.com/frontendfyi/rebuilding-linear.app)
+- **Design Pattern**: "Bento Box" compartmentalized layout
+
+#### Vercel.com
+- **Visual Type**: Dark theme with prism visual + grid glow
+- **Color Scheme**: White-on-black, gradient accents
+- **Typography**: Geist font family
+- **Animation**: Magnetic particles → fluid metallic liquid system
+- **Tools Used**: Motion.js + Three.js
+- **CTA Strategy**: Dual action-oriented buttons ("Start Deploying", "Get a Demo")
+- **Reference**: [hero.gallery/hero-gallery/vercel](https://hero.gallery/hero-gallery/vercel)
+
+#### Stripe.com
+- **Visual Type**: Animated WebGL gradient background
+- **Implementation**: Custom "minigl" WebGL + Canvas
+- **CSS Transform**: `skewY(-12deg)` for angled effect
+- **Gradient Colors**:
+  ```css
+  --gradientColorZero: #a960ee;
+  --gradientColorOne: #ff333d;
+  --gradientColorTwo: #90e0ff;
+  --gradientColorThree: #ffcb57;
+  ```
+- **Open Source Libraries**:
+  - [github.com/thelevicole/stripe-gradient](https://github.com/thelevicole/stripe-gradient)
+  - [kevinhufnagl.com/how-to-stripe-website-gradient-effect](https://kevinhufnagl.com/how-to-stripe-website-gradient-effect/)
+  - [CodePen examples](https://codepen.io/smitpatelx/pen/GRZayyO)
+
+### Verified Illustration Libraries (2024)
+
+| Library | URL | Unique Value |
+|---------|-----|--------------|
+| **unDraw** | [undraw.co](https://undraw.co) | 1000+ SVGs, color customizable on-site, MIT license |
+| **Storyset** | [storyset.com](https://storyset.com) | Animated + static, Lottie export, by Freepik |
+| **ManyPixels** | [manypixels.co](https://manypixels.co/gallery) | Most similar to unDraw, SVG + PNG |
+| **Open Doodles** | [opendoodles.com](https://opendoodles.com) | Hand-drawn quirky style, CC0 license |
+| **Humaaans** | [humaaans.com](https://humaaans.com) | Mix-and-match people builder |
+| **DrawKit** | [drawkit.com](https://drawkit.com) | SaaS-focused, free + premium |
+| **IRA Design** | [iradesign.io](https://iradesign.io) | 5 gradient styles per component |
+| **Open Peeps** | [openpeeps.com](https://openpeeps.com) | Hand-drawn, building-block style |
+| **Lummi** | [lummi.ai](https://lummi.ai) | AI-generated, 20,000+ images |
+| **ITG.Digital** | [itg.digital](https://itg.digital) | Online illustration builder |
+
+### Spline 3D Integration (React)
+
+**Official Library**: [@splinetool/react-spline](https://github.com/splinetool/react-spline)
+
+```jsx
+// Basic Spline Hero Integration
+import Spline from '@splinetool/react-spline';
+
+export default function Hero() {
+  return (
+    <div className="relative h-screen bg-black">
+      {/* 3D Background */}
+      <Spline
+        scene="https://prod.spline.design/YOUR-SCENE-ID/scene.splinecode"
+        className="absolute inset-0 w-full h-full"
+      />
+
+      {/* Content Overlay */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+        <h1 className="text-6xl font-bold">Your Headline</h1>
+        <p className="mt-4 text-xl text-gray-400">Subheadline text</p>
+        <button className="mt-8 px-8 py-3 bg-cyan-500 rounded-lg">
+          Get Started
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**Next.js SSR Support**:
+```jsx
+import Spline from '@splinetool/react-spline/next';
+// Renders blurred placeholder on server, loads 3D on client
+```
+
+**Spline vs React-Three-Fiber**:
+- **Spline**: No-code, faster prototyping, easier export
+- **React-Three-Fiber**: Fine-grained control, better performance optimization
+- **Recommendation**: Start with Spline, migrate to R3F if performance issues
+
+### Design Inspiration Galleries (Ranked)
+
+| Rank | Site | Best For | Why |
+|------|------|----------|-----|
+| 1 | [godly.website](https://godly.website) | Cutting-edge animation | Hand-curated, boundary-pushing designs |
+| 2 | [awwwards.com](https://awwwards.com) | Award-winning variety | World's best designers compete here |
+| 3 | [land-book.com](https://land-book.com) | Landing page specific | Focused on conversion-oriented pages |
+| 4 | [saaslandingpage.com](https://saaslandingpage.com) | SaaS-only examples | Curated from top SaaS companies |
+| 5 | [landingfolio.com](https://landingfolio.com) | Components + templates | Includes Tailwind/Figma resources |
+| 6 | [minimal.gallery](https://minimal.gallery) | Minimalist designs | Active since 2013, diverse quality |
+
+### Code Resources for Implementation
+
+**Stripe Gradient Effect**:
+- Tutorial: [kevinhufnagl.com/how-to-stripe-website-gradient-effect](https://kevinhufnagl.com/how-to-stripe-website-gradient-effect/)
+- Library: [github.com/thelevicole/stripe-gradient](https://github.com/thelevicole/stripe-gradient)
+- jQuery Plugin: [jqueryscript.net/animation/stripe-gradient-animation.html](https://www.jqueryscript.net/animation/stripe-gradient-animation.html)
+
+**Linear.app Clone**:
+- Full rebuild: [github.com/frontendfyi/rebuilding-linear.app](https://github.com/frontendfyi/rebuilding-linear.app)
+- Stack: Next.js + Tailwind + Framer Motion
+
+**Hero Section Components**:
+- Vercel v0: [v0.dev/chat/spline-design-hero](https://v0.dev/chat/spline-design-hero-h3SFiDjWwXO)
+- Chakra Templates: [chakra-templates.vercel.app/page-sections/hero](https://chakra-templates.vercel.app/page-sections/hero)
+- Aestero UI: [aestero-ui.vercel.app/herosection](https://aestero-ui.vercel.app/herosection)
+
+**Design+Code Course** (Paid):
+- [designcode.io/spline-react](https://designcode.io/spline-react/) - Complete 3D landing page tutorial
+
+---
+
+## Files Cleaned Up
+
+Removed unnecessary backup files:
+- `scripts/prompt.sh.bak`
+- `scripts/prompt.sh.bak2`
+- `scripts/prompt.sh.bak3`
+- `scripts/prompt.sh.backup`
+- `scripts/prompt.sh.backup_20251128_000650`
+- `scripts/prompt.sh.backup_20251128_001513`
