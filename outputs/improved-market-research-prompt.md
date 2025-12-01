@@ -750,6 +750,115 @@ Based on analysis of 7 PT clinic software competitors:
 
 ---
 
+## Professional Tech Stack Research (December 2024)
+
+### What Professionals Actually Use (Reddit/HN/GitHub)
+
+Based on research from Hacker News, Reddit r/webdev, and GitHub:
+
+#### The Winning Stack for Beautiful SaaS Websites
+
+```
+Frontend:  Next.js 14/15 + React 19 + TypeScript
+Styling:   Tailwind CSS v4
+Animation: Framer Motion
+Components: shadcn/ui + Magic UI or Aceternity UI
+Hosting:   Vercel
+```
+
+**Why this combo dominates:**
+- **Next.js** - Server-side rendering, SEO, fast builds (used by Linear, Vercel, Stripe)
+- **Tailwind** - 7% market share, #1 CSS framework for landing pages
+- **Framer Motion** - "Production-ready" per creators, powers Linear.app animations
+- **shadcn/ui** - Copy-paste components, full code ownership, no dependency lock-in
+
+#### Solo Entrepreneur Favorites (HN "Companies of One" Thread)
+
+| Stack | Use Case | Why They Chose It |
+|-------|----------|-------------------|
+| Next.js + shadcn/ui + Vercel | SaaS landing pages | Fast deployment, beautiful defaults |
+| Rails + SQLite + Hetzner | Full apps | Simple, cheap, convention over config |
+| Remix + Tailwind | Interactive apps | Nested routing, data loading |
+| Astro + Svelte | Content sites | Best performance, partial hydration |
+| Phoenix LiveView | Real-time apps | No JS needed, fast |
+
+#### Animation Component Libraries (Ranked by GitHub Stars)
+
+| Library | Stars | Best For | URL |
+|---------|-------|----------|-----|
+| **Magic UI** | 19,000+ | Landing pages, effects | [magicui.design](https://magicui.design) |
+| **Aceternity UI** | 15,000+ | Hero sections, 3D | [ui.aceternity.com](https://ui.aceternity.com) |
+| **shadcn/ui** | 80,000+ | Base components | [ui.shadcn.com](https://ui.shadcn.com) |
+| **Framer Motion** | 25,000+ | All animations | [framer.com/motion](https://www.framer.com/motion) |
+
+### GitHub Templates to Clone (Production-Ready)
+
+#### SaaS Landing Pages
+
+| Repo | Stack | Stars | URL |
+|------|-------|-------|-----|
+| **launch-ui** | Next.js 15 + shadcn + Tailwind v4 | High | [github.com/launch-ui/launch-ui](https://github.com/launch-ui/launch-ui) |
+| **saas-landing-page-template** | Next.js 14 + Framer Motion (Dark) | Growing | [github.com/karthikmudunuri/saas-landing-page-template](https://github.com/karthikmudunuri/saas-landing-page-template) |
+| **shadcn-landing-page** | Next.js + shadcn + TypeScript | Growing | [github.com/leoMirandaa/shadcn-landing-page](https://github.com/leoMirandaa/shadcn-landing-page) |
+| **Magic UI Templates** | Next.js + Magic UI + Tailwind | Included | [magicui.design/docs/templates](https://magicui.design/docs/templates) |
+
+#### Linear.app Clones (Learn Premium Animations)
+
+| Repo | What You Learn | URL |
+|------|----------------|-----|
+| **frontendfyi/rebuilding-linear.app** | Hero animations, keyboard shortcuts | [GitHub](https://github.com/frontendfyi/rebuilding-linear.app) |
+| **thenameiswiiwin/linear-clone** | Next.js 13 patterns | [GitHub](https://github.com/thenameiswiiwin/linear-clone) |
+
+### How Top SaaS Sites Are Built
+
+| Site | Framework | Animation | Hosting | Verified Source |
+|------|-----------|-----------|---------|-----------------|
+| **Linear.app** | Next.js | Framer Motion | Vercel | [BuiltWith](https://builtwith.com/linear.app) |
+| **Vercel.com** | Next.js | Three.js + Motion | Vercel | [BuiltWith](https://builtwith.com/vercel.com) |
+| **Stripe.com** | Custom React | WebGL (minigl) | Custom | Reverse-engineered |
+| **Notion.so** | Next.js | Custom | AWS | [StackShare](https://stackshare.io/notion) |
+
+### Step-by-Step: Build Like Linear
+
+```bash
+# 1. Clone the best starter
+npx create-next-app@latest my-site --typescript --tailwind --app
+
+# 2. Add shadcn/ui
+npx shadcn@latest init
+
+# 3. Add animation libraries
+npm install framer-motion @react-three/fiber @react-three/drei
+
+# 4. Add Magic UI components (copy-paste)
+# Visit magicui.design and copy components you need
+
+# 5. Add Aceternity effects (copy-paste)
+# Visit ui.aceternity.com for hero effects
+
+# 6. Deploy to Vercel
+vercel deploy
+```
+
+### Recommended Learning Path
+
+1. **Start**: Clone [launch-ui](https://github.com/launch-ui/launch-ui) or [Magic UI template](https://magicui.design/docs/templates)
+2. **Study**: [frontendfyi/rebuilding-linear.app](https://github.com/frontendfyi/rebuilding-linear.app) for animation patterns
+3. **Add Effects**: Copy components from Aceternity UI and Magic UI
+4. **Customize**: Use the design tokens from our CoreReceptionAI design system
+5. **Deploy**: Push to Vercel with one click
+
+### Tools for Non-Coders
+
+| Tool | Best For | Pricing |
+|------|----------|---------|
+| **v0.dev** | Generate React/Tailwind from prompts | Free tier |
+| **Framer** | No-code with pro animations | $20/mo |
+| **Webflow** | No-code, most flexibility | $14/mo |
+| **Bolt.new** | Full-stack AI builder | Free tier |
+
+---
+
 ## Files Cleaned Up
 
 Removed unnecessary backup files:
