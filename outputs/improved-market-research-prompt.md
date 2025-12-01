@@ -1,376 +1,482 @@
-# Improved Market & Design Research Prompt
+# Visual-First Design Research Prompt
 
-## Analysis of Original Prompt Issues
+## The Core Problem
+**Your websites are visually empty** - all text, no imagery, illustrations, or visual elements that create emotional impact and credibility.
 
-Based on the prompt engineering system frameworks, the original prompt had these issues:
-
-| Issue | Framework Reference | Impact |
-|-------|---------------------|--------|
-| Over-long (~4000+ words) | `what-doesnt.md`: "After ~2000 words, effectiveness drops" | Model loses focus on key instructions |
-| No XML structure | `structured-prompting.md`: "XML tags help Claude parse" | Unclear section boundaries |
-| Redundant instructions | `few-shot.md`: Quality > quantity | Wasted tokens, diluted focus |
-| Missing success criteria | `claude-code-handoff.md`: Testable checkboxes | No way to verify completion |
-| No non-goals | `claude-code-handoff.md`: Prevents scope creep | Risk of unnecessary work |
-| Too many phases (6) | `chain-of-thought.md`: Break into chains | Cognitive overload |
+This prompt focuses specifically on finding and implementing **visual assets** that transform plain text pages into premium, conversion-focused experiences.
 
 ---
 
-## Improved Prompt (Using CARE + XML Structure)
+## The Improved Prompt
 
 ```xml
 <context>
 <role>
-You are a senior market research analyst with expertise in B2B SaaS positioning,
-competitive intelligence, and design systems. You have 10+ years experience in
-healthcare technology markets.
+You are a visual design researcher specializing in high-converting B2B SaaS websites.
+Your expertise is finding and cataloging visual assets, imagery patterns, and design
+inspiration that transforms text-heavy pages into visually compelling experiences.
 </role>
 
-<project>
-Client: CoreReceptionAI - Premium AI workflow automation consultancy
-Target Market: Physical therapy clinics seeking operational efficiency
-Goal: Create an evidence-based design system and market positioning strategy
-</project>
+<core_problem>
+The client's websites are visually impoverished:
+- Hero sections with only headlines and buttons (no visuals)
+- Service sections that are text blocks without supporting imagery
+- No illustrations, 3D elements, abstract graphics, or photography
+- Result: Sites look cheap, untrustworthy, and fail to convert
 
-<constraints>
-- Output all files to /workspace/research/
-- Every recommendation must cite source evidence
-- Design decisions must be implementable in Tailwind CSS + React
-- Time budget: Focus on highest-impact research first
-</constraints>
+Goal: Find specific visual solutions with implementation sources.
+</core_problem>
+
+<project>
+Client: CoreReceptionAI - AI workflow automation for physical therapy clinics
+Need: Premium visual identity that signals trust, innovation, and professionalism
+Budget tier: Mid-to-high (willing to pay for quality assets)
+</project>
 </context>
 
 <action>
-Execute a systematic research operation across four domains. Complete each phase
-before proceeding to the next.
 
-<phase id="1" name="Competitive Intelligence">
-<objective>Map the competitive landscape and identify positioning opportunities</objective>
+<phase id="1" name="Visual Inspiration Sources">
+<objective>Catalog the BEST places to find design inspiration with visual-heavy examples</objective>
 
-<tasks>
-1. Search for direct competitors:
-   - "AI automation physical therapy clinic"
-   - "AI receptionist physical therapy practice"
-   - "workflow automation PT EMR integration"
+<sources_to_document>
 
-2. For each competitor (minimum 5), extract:
-</tasks>
+<category name="Curated Design Galleries">
+| Source | URL | Best For | How to Search |
+|--------|-----|----------|---------------|
+| Dribbble | dribbble.com | UI/hero concepts, illustrations | "SaaS landing page", "hero section", "B2B website" |
+| Behance | behance.net | Full case studies with process | "SaaS website design", "landing page concept" |
+| Awwwards | awwwards.com | Award-winning live sites | Filter: "Corporate", "Technology" |
+| Mobbin | mobbin.com | Mobile + web patterns | Browse "Marketing" category |
+| Land-book | land-book.com | Landing page specific | Filter by industry |
+| Lapa Ninja | lapa.ninja | Landing pages only | Browse categories |
+| SaaS Landing Page | saaslandingpage.com | SaaS-specific examples | Browse all |
+| Godly | godly.website | Cutting-edge designs | Browse featured |
+| Dark Mode Design | darkmodedesign.com | Dark theme inspiration | Browse all |
+| One Page Love | onepagelove.com | Single page sites | Filter by industry |
+</category>
 
-<output_format>
-```json
-{
-  "company_name": "",
-  "url": "",
-  "hero_message": "",
-  "pricing_model": "",
-  "design_quality": "premium|standard|basic",
-  "key_differentiators": [],
-  "weaknesses": [],
-  "cta_strategy": ""
-}
-```
-</output_format>
+<category name="Component-Specific Inspiration">
+| Source | URL | Best For |
+|--------|-----|----------|
+| Hero Patterns | heropatterns.com | SVG background patterns |
+| UI Patterns | ui-patterns.com | Specific UI solutions |
+| Page Collective | pagecollective.com | Full page screenshots |
+| Refero Design | refero.design | Searchable design database |
+| Screenlane | screenlane.com | Specific UI patterns |
+</category>
 
-<deliverable>/workspace/research/competitors.json</deliverable>
+</sources_to_document>
+
+<task>
+For each source, find 3-5 examples relevant to CoreReceptionAI and document:
+- Screenshot/URL of example
+- What visual element makes it work
+- How to replicate or source similar assets
+</task>
+
+<deliverable>/workspace/research/visual-inspiration-sources.md</deliverable>
 </phase>
 
-<phase id="2" name="Premium SaaS Benchmarks">
-<objective>Extract visual and messaging patterns from successful B2B SaaS</objective>
+<phase id="2" name="Hero Visual Patterns">
+<objective>Document the 7 most effective hero visual types for B2B SaaS</objective>
 
-<benchmark_companies>
-Rippling, WorkOS, Vanta, Linear, Superhuman, Clay
-</benchmark_companies>
+<hero_visual_types>
 
-<tasks>
-For each company, document:
-1. Hero section structure and copy
-2. Color palette (hex values)
-3. Typography choices
-4. Animation patterns
-5. Social proof strategy
-</tasks>
+<type id="1" name="3D Abstract Objects">
+<description>Floating geometric shapes, abstract 3D renders</description>
+<examples>Linear.app, Stripe.com, Vercel.com</examples>
+<where_to_get>
+- Spline (spline.design) - Free 3D design tool
+- Three.js + React Three Fiber - Code your own
+- Sketchfab - 3D model marketplace
+- Blender + free models from Poly Haven
+</where_to_get>
+<implementation>React Three Fiber component or Spline embed</implementation>
+</type>
+
+<type id="2" name="Product Screenshots/Mockups">
+<description>Dashboard previews, app interfaces in device frames</description>
+<examples>Notion.so, Figma.com, Slack.com</examples>
+<where_to_get>
+- Mockup World (mockupworld.co) - Free mockups
+- Angle (angle.sh) - Premium device mockups
+- Screely (screely.com) - Browser mockups
+- Cleanmock (cleanmock.com) - Simple mockups
+</where_to_get>
+<implementation>PNG/SVG with CSS animations on scroll</implementation>
+</type>
+
+<type id="3" name="Custom Illustrations">
+<description>Brand-specific illustrated scenes, isometric graphics</description>
+<examples>Mailchimp.com, Dropbox.com, Intercom.com</examples>
+<where_to_get>
+- unDraw (undraw.co) - Free customizable SVGs
+- Storyset (storyset.com) - Animated illustrations
+- Blush (blush.design) - Mix-and-match illustrations
+- Humaaans (humaaans.com) - People illustrations
+- DrawKit (drawkit.com) - Free illustration packs
+- Icons8 Illustrations (icons8.com/illustrations)
+- IRA Design (iradesign.io) - Gradient illustrations
+</where_to_get>
+<implementation>SVG with CSS/Framer Motion animations</implementation>
+</type>
+
+<type id="4" name="Abstract Gradient Backgrounds">
+<description>Mesh gradients, aurora effects, animated color flows</description>
+<examples>Stripe.com, Apple.com, Arc Browser</examples>
+<where_to_get>
+- Mesh Gradient (meshgradient.in) - Generate mesh gradients
+- Haikei (haikei.app) - SVG background generator
+- Coolors Gradient (coolors.co/gradient-maker)
+- CSS Gradient (cssgradient.io)
+- Gradienta (gradienta.io) - Free gradient backgrounds
+</where_to_get>
+<implementation>CSS gradients with animation keyframes</implementation>
+</type>
+
+<type id="5" name="Lifestyle/Contextual Photography">
+<description>Real photos showing product in use, target audience</description>
+<examples>Zoom.us, Calendly.com, HubSpot.com</examples>
+<where_to_get>
+- Unsplash (unsplash.com) - Free high-quality photos
+- Pexels (pexels.com) - Free stock photos
+- Burst (burst.shopify.com) - Free business photos
+- Nappy (nappy.co) - Diverse stock photos
+- PREMIUM: Shutterstock, Getty, Adobe Stock
+</where_to_get>
+<implementation>Optimized WebP with lazy loading</implementation>
+</type>
+
+<type id="6" name="Animated Data Visualizations">
+<description>Live charts, metrics, flowing data representations</description>
+<examples>Plausible.io, Fathom Analytics, Segment.com</examples>
+<where_to_get>
+- Chart.js - Animated charts
+- Recharts - React chart library
+- Framer Motion - Custom animations
+- Lottie (lottiefiles.com) - After Effects animations
+</where_to_get>
+<implementation>React component with live/mock data</implementation>
+</type>
+
+<type id="7" name="Video Backgrounds/Loops">
+<description>Subtle looping video, product demos, ambient motion</description>
+<examples>Apple.com, Tesla.com, Webflow.com</examples>
+<where_to_get>
+- Coverr (coverr.co) - Free stock video
+- Pexels Video (pexels.com/videos)
+- Mixkit (mixkit.co) - Free video clips
+- PREMIUM: Artgrid, Storyblocks
+</where_to_get>
+<implementation>HTML5 video with autoplay, muted, loop</implementation>
+</type>
+
+</hero_visual_types>
+
+<task>
+1. Visit each example site listed
+2. Screenshot the hero section
+3. Identify which visual type they use
+4. Document the exact implementation approach
+5. Recommend which type fits CoreReceptionAI best (with reasoning)
+</task>
+
+<deliverable>/workspace/research/hero-visual-patterns.md</deliverable>
+</phase>
+
+<phase id="3" name="Visual Asset Marketplace Research">
+<objective>Create a sourcing guide for every type of visual asset needed</objective>
+
+<asset_categories>
+
+<category name="Illustrations & Graphics">
+| Resource | URL | Price | Quality | Best For |
+|----------|-----|-------|---------|----------|
+| unDraw | undraw.co | Free | High | Concept illustrations |
+| Storyset | storyset.com | Free | High | Animated scenes |
+| Blush | blush.design | Free/Paid | High | Customizable people |
+| DrawKit | drawkit.com | Free/Paid | High | SaaS illustrations |
+| Absurd Design | absurd.design | Free | Unique | Quirky illustrations |
+| Open Peeps | openpeeps.com | Free | Good | Hand-drawn people |
+| Stubborn | stubborn.fun | Free | Good | Character generator |
+| Pixeltrue | pixeltrue.com | Free | High | Modern illustrations |
+</category>
+
+<category name="3D Assets">
+| Resource | URL | Price | Best For |
+|----------|-----|-------|----------|
+| Spline | spline.design | Free | Interactive 3D for web |
+| Sketchfab | sketchfab.com | Free/Paid | 3D model marketplace |
+| Poly Haven | polyhaven.com | Free | 3D models, HDRIs |
+| Renderforest | renderforest.com | Paid | 3D mockups |
+| Vectary | vectary.com | Free/Paid | 3D design tool |
+| Three.js Journey | threejs-journey.com | Course | Learn 3D web |
+</category>
+
+<category name="Icons">
+| Resource | URL | Price | Style |
+|----------|-----|-------|-------|
+| Lucide | lucide.dev | Free | Clean line icons |
+| Heroicons | heroicons.com | Free | Tailwind-optimized |
+| Phosphor | phosphoricons.com | Free | Flexible weights |
+| Feather | feathericons.com | Free | Minimal |
+| Tabler Icons | tabler-icons.io | Free | 3000+ icons |
+| Lordicon | lordicon.com | Free/Paid | Animated icons |
+</category>
+
+<category name="Background Patterns & Textures">
+| Resource | URL | Price | Type |
+|----------|-----|-------|------|
+| Hero Patterns | heropatterns.com | Free | SVG patterns |
+| Haikei | haikei.app | Free | Generated backgrounds |
+| Pattern Monster | pattern.monster | Free | Customizable patterns |
+| Subtle Patterns | subtlepatterns.com | Free | Texture overlays |
+| SVG Backgrounds | svgbackgrounds.com | Free | Ready-made SVGs |
+| Trianglify | trianglify.io | Free | Geometric patterns |
+</category>
+
+<category name="Stock Photography">
+| Resource | URL | Price | Focus |
+|----------|-----|-------|-------|
+| Unsplash | unsplash.com | Free | High-quality general |
+| Pexels | pexels.com | Free | Diverse, searchable |
+| Burst | burst.shopify.com | Free | Business/commerce |
+| Nappy | nappy.co | Free | Diversity-focused |
+| Reshot | reshot.com | Free | Unique, non-stocky |
+| PREMIUM | shutterstock.com | $29+/mo | Largest selection |
+| PREMIUM | adobe.stock.com | $29+/mo | Adobe integration |
+</category>
+
+<category name="Animation Resources">
+| Resource | URL | Price | Type |
+|----------|-----|-------|------|
+| LottieFiles | lottiefiles.com | Free/Paid | After Effects → Web |
+| Rive | rive.app | Free/Paid | Interactive animations |
+| Motion One | motion.dev | Free | JS animation library |
+| Framer Motion | framer.com/motion | Free | React animations |
+| GSAP | gsap.com | Free/Paid | Professional animations |
+| Animate.css | animate.style | Free | CSS animations |
+</category>
+
+</asset_categories>
+
+<deliverable>/workspace/research/visual-asset-sources.md</deliverable>
+</phase>
+
+<phase id="4" name="Competitor Visual Audit">
+<objective>Analyze what visuals competitors use (and where yours fall short)</objective>
+
+<audit_framework>
+For each competitor, document:
+
+```markdown
+## [Competitor Name]
+**URL**:
+**Overall Visual Score**: /10
+
+### Hero Section
+- [ ] Has hero image/visual: Yes/No
+- Visual type: [3D | Illustration | Photo | Video | Gradient | None]
+- Visual source (if identifiable):
+- Screenshot: [attach]
+
+### Supporting Sections
+- [ ] Service cards have icons: Yes/No
+- [ ] Features have illustrations: Yes/No
+- [ ] Testimonials have photos: Yes/No
+- [ ] Data/stats visualized: Yes/No
+
+### Visual Assets Used
+| Asset Type | Present? | Quality | Source (if known) |
+|------------|----------|---------|-------------------|
+| Custom illustrations | | | |
+| Stock photos | | | |
+| Icons | | | |
+| 3D elements | | | |
+| Background patterns | | | |
+| Animations | | | |
+
+### What Makes It Work (or Not)
+[Analysis]
+
+### Visual Gap vs CoreReceptionAI
+[What they have that you don't]
+```
+</audit_framework>
+
+<competitors_to_audit>
+1. Direct PT clinic automation competitors (5+)
+2. Premium B2B SaaS benchmarks: Linear, Vercel, Stripe, Notion, Figma
+</competitors_to_audit>
+
+<deliverable>/workspace/research/competitor-visual-audit.md</deliverable>
+</phase>
+
+<phase id="5" name="Visual Implementation Roadmap">
+<objective>Create prioritized list of visuals to add with exact sources</objective>
 
 <output_format>
 ```markdown
-## [Company Name]
-**Hero Message**: [Exact copy]
-**Color System**: Primary: #XXX, Accent: #XXX, Background: #XXX
-**Typography**: [Font family, weights]
-**What Works**: [2-3 specific patterns to adapt]
+# CoreReceptionAI Visual Implementation Roadmap
+
+## Immediate Impact (Week 1)
+
+### 1. Hero Visual
+**Recommendation**: [Specific type]
+**Why**: [Evidence from research]
+**Source**: [Exact URL/tool]
+**Implementation**:
+```code
+[Actual code snippet or embed method]
+```
+**Estimated time**: X hours
+
+### 2. Service Section Icons
+**Recommendation**: [Icon set]
+**Source**: [URL]
+**Icons needed**: [List with names]
+
+### 3. Background Treatment
+**Recommendation**: [Pattern/gradient type]
+**Source**: [URL]
+**CSS**:
+```css
+[Actual CSS]
+```
+
+## High Impact (Week 2)
+
+### 4. Testimonial Section
+**Add**: Client photos or company logos
+**Source**: [Where to get/request]
+**Fallback**: [If no real photos available]
+
+### 5. Feature Illustrations
+**Recommendation**: [Style]
+**Source**: [URL]
+**Illustrations needed**:
+- Feature 1: [description]
+- Feature 2: [description]
+- Feature 3: [description]
+
+## Polish (Week 3+)
+
+### 6. Micro-animations
+**Library**: [Framer Motion / GSAP / etc]
+**Animations**:
+- Hero entrance: [description]
+- Scroll reveals: [description]
+- Hover states: [description]
+
+### 7. 3D Elements (Optional)
+**Tool**: [Spline / Three.js]
+**Concept**: [What to build]
+**Fallback**: [For mobile/low-end]
 ```
 </output_format>
 
-<deliverable>/workspace/research/benchmarks.md</deliverable>
+<deliverable>/workspace/research/VISUAL_ROADMAP.md</deliverable>
 </phase>
 
-<phase id="3" name="Design Pattern Mining">
-<objective>Find production-ready code patterns from successful implementations</objective>
-
-<github_searches>
-- `"landing page" "saas" "tailwind" stars:>500`
-- `"glassmorphism" "tailwind" "framer-motion"`
-- `"design system" "react" stars:>1000`
-</github_searches>
-
-<extract_for_each_repo>
-1. Tailwind config (color system, spacing, typography)
-2. Animation implementations (framer-motion patterns)
-3. Component structure (hero, pricing cards, CTAs)
-</extract_for_each_repo>
-
-<output_format>
-```typescript
-// Pattern: [Name]
-// Source: [repo URL]
-// Use case: [Where to apply]
-
-const pattern = {
-  // Actual code snippet
-}
-```
-</output_format>
-
-<deliverable>/workspace/research/code-patterns.md</deliverable>
-</phase>
-
-<phase id="4" name="Customer Pain Points">
-<objective>Understand real PT clinic problems in their own language</objective>
-
-<reddit_searches>
-Subreddits: r/physicaltherapy, r/healthcare
-Queries: "practice management software", "no-show patients", "administrative burden"
-</reddit_searches>
-
-<extract>
-- Exact quotes describing pain points
-- Frustrations with current solutions
-- Language they use to describe problems
-</extract>
-
-<deliverable>/workspace/research/pain-points.md</deliverable>
-</phase>
 </action>
 
 <result>
 <primary_deliverable>
-/workspace/research/DESIGN_SYSTEM.md - Complete design specification containing:
-
-```markdown
-# CoreReceptionAI Design System
-
-## Evidence Summary
-- [X] competitors analyzed
-- [X] benchmark companies studied
-- [X] GitHub repos reviewed
-- [X] pain points documented
-
-## Color System
-```typescript
-const colors = {
-  background: { value: "#XXX", rationale: "[Evidence]" },
-  primary: { value: "#XXX", rationale: "[Evidence]" },
-  accent: { value: "#XXX", rationale: "[Evidence]" },
-}
-```
-
-## Typography
-- Heading: [Font] - Used by [X] of benchmarks
-- Body: [Font] - Rationale: [Evidence]
-- Scale: [Values with reasoning]
-
-## Component Specifications
-
-### Hero Section
-- Layout: [Evidence-based structure]
-- Animation: [Specific pattern from GitHub]
-- Copy framework: [Based on pain point research]
-
-### Glassmorphism Cards
-```typescript
-// From: [source repo]
-const glassCard = { /* exact values */ }
-```
-
-### Pricing Cards
-[Specification with evidence]
-
-## Competitive Positioning
-Based on competitor analysis:
-- Gap: [What competitors miss]
-- Our angle: [How we differentiate]
-- Messaging: [Pain point language to use]
-
-## Implementation Priority
-1. [Highest impact item] - Why: [Evidence]
-2. [Second priority] - Why: [Evidence]
-3. [Third priority] - Why: [Evidence]
-```
+/workspace/research/VISUAL_ROADMAP.md containing:
+- Prioritized list of visuals to implement
+- Exact sources for each asset type
+- Code snippets for implementation
+- Estimated timeline
 </primary_deliverable>
 
 <supporting_files>
-- /workspace/research/competitors.json
-- /workspace/research/benchmarks.md
-- /workspace/research/code-patterns.md
-- /workspace/research/pain-points.md
+- /workspace/research/visual-inspiration-sources.md
+- /workspace/research/hero-visual-patterns.md
+- /workspace/research/visual-asset-sources.md
+- /workspace/research/competitor-visual-audit.md
 </supporting_files>
 </result>
 
 <evaluate>
 <success_criteria>
-- [ ] Minimum 5 competitors analyzed with complete data extraction
-- [ ] All 6 benchmark companies documented
-- [ ] At least 5 GitHub repos with extractable code patterns
-- [ ] Minimum 10 pain point quotes from real PT professionals
-- [ ] Every design decision in final spec cites evidence source
-- [ ] Color palette includes contrast ratios for accessibility
-- [ ] Typography scale is implementable in Tailwind
-- [ ] At least 3 ready-to-use code snippets included
+- [ ] Minimum 10 design inspiration sources documented with search strategies
+- [ ] All 7 hero visual types documented with real examples
+- [ ] At least 30 visual asset sources cataloged across categories
+- [ ] 5+ competitors audited for visual patterns
+- [ ] Final roadmap includes specific URLs/tools for each recommended visual
+- [ ] Code snippets provided for key implementations
+- [ ] Every recommendation cites evidence from research
 </success_criteria>
 
-<quality_checks>
-- No design decision without evidence citation
-- All hex values verified as valid
-- Code snippets are syntactically correct
-- Pain points use actual user language, not paraphrased
-</quality_checks>
-
-<anti_patterns>
-Avoid these common mistakes:
-- Generic "best practices" without specific sources
-- Design opinions without competitive evidence
-- Recommending tools/libraries without seeing production use
-- Pain points that sound like marketing copy
-</anti_patterns>
+<the_test>
+After implementing this roadmap, the website should:
+1. Have a visually compelling hero (not just text + button)
+2. Use icons/illustrations in service sections
+3. Include real or styled testimonial photos
+4. Have animated elements that guide attention
+5. Feel "premium" at first glance
+</the_test>
 </evaluate>
 
 <non_goals>
-Explicitly do NOT:
-- Build any actual components (research only)
-- Create visual mockups or wireframes
-- Analyze more than 10 competitors (diminishing returns)
-- Deep dive into technical SEO
-- Research pricing strategy (separate task)
-- Evaluate hosting/infrastructure options
+Do NOT:
+- Recommend paid assets over $100 without free alternatives
+- Suggest visuals that require custom illustration skills
+- Focus on color/typography (separate research)
+- Recommend complex 3D that hurts performance
+- Include more than 3 options per category (decision paralysis)
 </non_goals>
-
-<execution_notes>
-<priority_order>
-If time is limited, prioritize in this order:
-1. Competitor analysis (foundation for positioning)
-2. Pain points (drives messaging)
-3. Benchmark design patterns (visual direction)
-4. GitHub code patterns (implementation details)
-</priority_order>
-
-<output_format_preference>
-- JSON for structured data (competitors)
-- Markdown for analysis (benchmarks, patterns)
-- TypeScript for code snippets (implementation-ready)
-</output_format_preference>
-</execution_notes>
 ```
 
 ---
 
-## Key Improvements Made
+## Quick Reference: Best Visual Asset Sources
 
-### 1. Applied CARE Framework
-- **C**ontext: Role, project, constraints clearly defined upfront
-- **A**ction: Phased tasks with specific instructions
-- **R**esult: Explicit deliverables with format specifications
-- **E**valuate: Testable success criteria with checkboxes
+### For Immediate Use (Free, High Quality)
 
-### 2. XML Structure for Clarity
-Per `structured-prompting.md`, XML tags help Claude:
-- Distinguish sections clearly
-- Follow hierarchical instructions
-- Parse complex requirements without confusion
+| Need | Go Here First |
+|------|---------------|
+| Hero illustration | undraw.co or storyset.com |
+| Icons | lucide.dev or heroicons.com |
+| Background pattern | haikei.app |
+| Stock photos | unsplash.com |
+| Animations | lottiefiles.com |
+| 3D elements | spline.design |
+| Gradients | meshgradient.in |
+| Mockups | mockupworld.co |
 
-### 3. Reduced Length (~60% shorter)
-Original: ~4000+ words
-Improved: ~1500 words
-Per `what-doesnt.md`: "After ~2000 words, prompt effectiveness drops"
+### For Inspiration
 
-### 4. Added Non-Goals
-Per `claude-code-handoff.md`: Prevents scope creep and clarifies boundaries
+| Need | Go Here First |
+|------|---------------|
+| Hero section ideas | godly.website |
+| Full landing pages | land-book.com |
+| SaaS-specific | saaslandingpage.com |
+| Premium/award-winning | awwwards.com |
+| Dark mode designs | darkmodedesign.com |
 
-### 5. Testable Success Criteria
-Per `claude-code-handoff.md`:
-- Specific, measurable outcomes
-- Checkbox format for verification
-- Minimum thresholds defined
+### Implementation Libraries
 
-### 6. Evidence-Based Requirements
-Every design decision must cite source, preventing:
-- Opinion-based recommendations
-- Unverifiable claims
-- Generic "best practices"
-
-### 7. Priority Order
-Per `what-works.md` "Ship small, iterate":
-- Phased approach with clear priorities
-- Graceful degradation if time-limited
-
-### 8. Anti-Patterns Section
-Per `what-doesnt.md`: Explicitly call out what to avoid
+| Need | Use This |
+|------|----------|
+| React animations | framer-motion |
+| 3D in React | react-three-fiber |
+| Scroll animations | GSAP ScrollTrigger |
+| Lottie animations | lottie-react |
+| Image optimization | next/image or sharp |
 
 ---
 
-## Alternative: Chained Prompts Approach
+## Why This Prompt Works Better
 
-For even better results, break into 4 separate prompts:
+| Original Problem | This Prompt's Solution |
+|------------------|------------------------|
+| Focused on colors/typography | Focuses on **visual assets** (images, illustrations, 3D) |
+| No specific sources | **50+ specific URLs** for assets |
+| Abstract "design patterns" | **Concrete visual types** with examples |
+| No implementation guidance | **Code snippets** and embed methods |
+| Overwhelming scope | **Prioritized roadmap** (Week 1, 2, 3) |
+| Generic "research" | **Audit framework** for competitors |
 
-### Prompt Chain 1: Competitive Intelligence
-```xml
-<role>Competitive intelligence analyst</role>
-<task>Analyze 5-7 direct competitors in PT clinic automation</task>
-<output>/workspace/research/competitors.json</output>
-<format>[JSON schema]</format>
-```
-
-### Prompt Chain 2: Design Benchmarking
-```xml
-<role>Design systems researcher</role>
-<input>Read /workspace/research/competitors.json first</input>
-<task>Analyze 6 premium B2B SaaS sites for design patterns</task>
-<output>/workspace/research/benchmarks.md</output>
-```
-
-### Prompt Chain 3: Code Pattern Mining
-```xml
-<role>Frontend architecture researcher</role>
-<input>Read benchmarks.md for context</input>
-<task>Find production code patterns from GitHub</task>
-<output>/workspace/research/code-patterns.md</output>
-```
-
-### Prompt Chain 4: Synthesis
-```xml
-<role>Design system architect</role>
-<input>Read all files in /workspace/research/</input>
-<task>Synthesize into complete design system specification</task>
-<output>/workspace/research/DESIGN_SYSTEM.md</output>
-<requirement>Every decision must cite evidence from inputs</requirement>
-```
-
-**Why chaining works better:**
-- Each prompt stays under 500 words (optimal)
-- Model focuses on one task at a time
-- Outputs build on each other
-- Easier to debug/iterate individual phases
-
----
-
-## Quick Reference: Prompt Engineering Principles Applied
-
-| Principle | How Applied |
-|-----------|-------------|
-| Role definition first | `<role>` tag at start |
-| Task-first ordering | Main action before supporting details |
-| Clear delimiters | XML tags throughout |
-| Output format specification | JSON/Markdown templates provided |
-| Testable success criteria | Checkbox list with minimums |
-| Non-goals | Explicit exclusions |
-| Evidence requirement | "Must cite source" throughout |
-| Priority ordering | Numbered phases with fallback guidance |
-| Anti-patterns | Explicit "avoid" section |
-| Reasonable length | ~1500 words vs ~4000 original |
+The output isn't "what makes good design" - it's **"here's exactly what to add and where to get it."**
