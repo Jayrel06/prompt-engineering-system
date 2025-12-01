@@ -1,0 +1,17 @@
+# Vector Search Requirements for Prompt Engineering System
+
+# Sentence Transformers - For generating text embeddings
+# Uses all-MiniLM-L6-v2 model for efficient semantic embeddings
+sentence-transformers>=2.2.2
+
+# Qdrant Client - Vector database client
+# For storing and searching embedded vectors
+qdrant-client>=1.7.0
+
+# Python Dotenv - Environment variable management
+# For managing configuration and secrets
+python-dotenv>=1.0.0
+
+# Additional dependencies that may be useful
+# numpy - Required by sentence-transformers (usually auto-installed)
+# torch - Required by sentence-transformers (usually auto-installed)

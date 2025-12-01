@@ -1,0 +1,371 @@
+{
+  "name": "Weekly Reflection",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ],
+      "notes": "Runs every Sunday at 6:00 PM"
+    },
+    {
+      "parameters": {
+        "content": "## Weekly Reflection Flow\n\nThis workflow runs every Sunday at 6 PM:\n1. Queries recent outputs from vector DB\n2. Analyzes patterns and insights\n3. Generates reflection summary\n4. Sends notification via Slack/Email\n5. Optionally creates action items",
+        "height": 220,
+        "width": 320,
+        "color": 7
+      },
+      "id": "sticky-note-1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calculate date range for the past week\nconst now = new Date();\nconst oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);\n\nreturn {\n  start_date: oneWeekAgo.toISOString(),\n  end_date: now.toISOString(),\n  week_number: Math.ceil((now - new Date(now.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000)),\n  year: now.getFullYear(),\n  formatted_date: now.toLocaleDateString('en-US', {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric'\n  })\n};"
+      },
+      "id": "calculate-date-range",
+      "name": "Calculate Date Range",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python C:/Users/JRiel/prompt-engineering-system/scripts/query_vector_db.py",
+        "arguments": "--start-date {{ $json.start_date }} --end-date {{ $json.end_date }} --limit 100",
+        "options": {}
+      },
+      "id": "query-vector-db",
+      "name": "Query Vector DB",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and analyze the outputs from vector DB\nconst dbOutput = $input.first().json.stdout;\nconst dateInfo = $('Calculate Date Range').first().json;\n\nlet outputs = [];\ntry {\n  outputs = JSON.parse(dbOutput);\n} catch (e) {\n  outputs = [];\n}\n\n// Analyze patterns\nconst categories = {};\nconst tags = {};\nconst sources = {};\n\noutputs.forEach(output => {\n  // Count categories\n  if (output.category) {\n    categories[output.category] = (categories[output.category] || 0) + 1;\n  }\n  \n  // Count tags\n  if (output.tags && Array.isArray(output.tags)) {\n    output.tags.forEach(tag => {\n      tags[tag] = (tags[tag] || 0) + 1;\n    });\n  }\n  \n  // Count sources\n  if (output.source) {\n    sources[output.source] = (sources[output.source] || 0) + 1;\n  }\n});\n\n// Get top items\nconst topCategories = Object.entries(categories)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([name, count]) => ({ name, count }));\n\nconst topTags = Object.entries(tags)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 10)\n  .map(([name, count]) => ({ name, count }));\n\nconst topSources = Object.entries(sources)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([name, count]) => ({ name, count }));\n\nreturn {\n  week_info: {\n    week_number: dateInfo.week_number,\n    year: dateInfo.year,\n    date_range: `${new Date(dateInfo.start_date).toLocaleDateString()} - ${dateInfo.formatted_date}`\n  },\n  statistics: {\n    total_outputs: outputs.length,\n    top_categories: topCategories,\n    top_tags: topTags,\n    top_sources: topSources\n  },\n  recent_outputs: outputs.slice(0, 10).map(o => ({\n    content: o.content.substring(0, 200) + (o.content.length > 200 ? '...' : ''),\n    category: o.category,\n    tags: o.tags,\n    timestamp: o.timestamp\n  }))\n};"
+      },
+      "id": "analyze-patterns",
+      "name": "Analyze Patterns",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate reflection prompt for LLM\nconst analysis = $input.first().json;\n\nconst prompt = `You are analyzing a week of prompt engineering outputs and learnings. Generate a thoughtful reflection summary.\n\n## Week ${analysis.week_info.week_number}, ${analysis.week_info.year}\n**Date Range:** ${analysis.week_info.date_range}\n\n## Statistics\n- Total outputs captured: ${analysis.statistics.total_outputs}\n\n### Top Categories:\n${analysis.statistics.top_categories.map(c => `- ${c.name}: ${c.count}`).join('\\n')}\n\n### Top Tags:\n${analysis.statistics.top_tags.map(t => `- ${t.name}: ${t.count}`).join('\\n')}\n\n### Top Sources:\n${analysis.statistics.top_sources.map(s => `- ${s.name}: ${s.count}`).join('\\n')}\n\n## Recent Outputs Sample:\n${analysis.recent_outputs.map((o, i) => `\n${i + 1}. **[${o.category}]** ${o.tags.join(', ')}\n   ${o.content}\n   _${new Date(o.timestamp).toLocaleString()}_\n`).join('\\n')}\n\n## Reflection Task\n\nBased on this data, provide:\n1. **Key Themes**: What patterns emerge from this week's work?\n2. **Insights**: What did we learn about prompt engineering?\n3. **Quality Assessment**: Are the outputs improving over time?\n4. **Recommendations**: What should we focus on next week?\n5. **Action Items**: Specific improvements to make to the system\n\nFormat your response in markdown with clear sections.`;\n\nreturn {\n  prompt: prompt,\n  analysis_data: analysis\n};"
+      },
+      "id": "generate-reflection-prompt",
+      "name": "Generate Reflection Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:4000/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "liteLlmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-4o"
+            },
+            {
+              "name": "messages",
+              "value": "={{ [{\"role\": \"system\", \"content\": \"You are an expert prompt engineering coach providing weekly reflections.\"}, {\"role\": \"user\", \"content\": $json.prompt}] }}"
+            },
+            {
+              "name": "temperature",
+              "value": "0.7"
+            },
+            {
+              "name": "max_tokens",
+              "value": "3000"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-llm-reflection",
+      "name": "Get LLM Reflection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the reflection for notification\nconst llmResponse = $input.first().json;\nconst analysisData = $('Generate Reflection Prompt').first().json.analysis_data;\n\nconst reflection = llmResponse.choices[0].message.content;\n\nconst weekInfo = analysisData.week_info;\nconst stats = analysisData.statistics;\n\n// Create formatted message for Slack\nconst slackMessage = {\n  text: `Weekly Prompt Engineering Reflection - Week ${weekInfo.week_number}`,\n  blocks: [\n    {\n      type: \"header\",\n      text: {\n        type: \"plain_text\",\n        text: `Weekly Reflection - Week ${weekInfo.week_number}, ${weekInfo.year}`\n      }\n    },\n    {\n      type: \"section\",\n      text: {\n        type: \"mrkdwn\",\n        text: `*Date Range:* ${weekInfo.date_range}\\n*Total Outputs:* ${stats.total_outputs}`\n      }\n    },\n    {\n      type: \"divider\"\n    },\n    {\n      type: \"section\",\n      text: {\n        type: \"mrkdwn\",\n        text: reflection\n      }\n    }\n  ]\n};\n\n// Create email content\nconst emailContent = `\n# Weekly Prompt Engineering Reflection\n\n## Week ${weekInfo.week_number}, ${weekInfo.year}\n**${weekInfo.date_range}**\n\n**Total Outputs This Week:** ${stats.total_outputs}\n\n---\n\n${reflection}\n\n---\n\n*Generated automatically by the Prompt Engineering System*\n`;\n\nreturn {\n  slack_message: slackMessage,\n  email_content: emailContent,\n  email_subject: `Weekly Reflection - Week ${weekInfo.week_number}, ${weekInfo.year}`,\n  reflection_text: reflection,\n  statistics: stats,\n  week_info: weekInfo,\n  generated_at: new Date().toISOString()\n};"
+      },
+      "id": "format-notification",
+      "name": "Format Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "channel": "#prompt-engineering",
+        "text": "={{ $json.slack_message.text }}",
+        "otherOptions": {
+          "blocks": "={{ $json.slack_message.blocks }}"
+        }
+      },
+      "id": "send-to-slack",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1780,
+        200
+      ],
+      "notes": "Configure with your Slack credentials"
+    },
+    {
+      "parameters": {
+        "fromEmail": "system@yourdomain.com",
+        "toEmail": "team@yourdomain.com",
+        "subject": "={{ $json.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $json.email_content }}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1780,
+        400
+      ],
+      "notes": "Configure with your SMTP settings"
+    },
+    {
+      "parameters": {
+        "command": "bash",
+        "arguments": "-c \"echo '{{ $json.email_content }}' > 'C:/Users/JRiel/prompt-engineering-system/learnings/reflections/week-{{ $json.week_info.week_number }}-{{ $json.week_info.year }}.md'\"",
+        "options": {}
+      },
+      "id": "save-reflection",
+      "name": "Save Reflection",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Wait for all notification branches to complete\nconst formatData = $('Format Notification').first().json;\n\nreturn {\n  success: true,\n  message: \"Weekly reflection completed\",\n  week: formatData.week_info.week_number,\n  year: formatData.week_info.year,\n  total_outputs: formatData.statistics.total_outputs,\n  generated_at: formatData.generated_at\n};"
+      },
+      "id": "completion-summary",
+      "name": "Completion Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Notification Channels\n\nThe reflection is sent to:\n- Slack channel\n- Email recipients\n- Saved as markdown file\n\nConfigure credentials for each channel or disable unused branches.",
+        "height": 180,
+        "width": 260,
+        "color": 2
+      },
+      "id": "sticky-note-2",
+      "name": "Sticky Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        60
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Calculate Date Range",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Date Range": {
+      "main": [
+        [
+          {
+            "node": "Query Vector DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Vector DB": {
+      "main": [
+        [
+          {
+            "node": "Analyze Patterns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Patterns": {
+      "main": [
+        [
+          {
+            "node": "Generate Reflection Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Reflection Prompt": {
+      "main": [
+        [
+          {
+            "node": "Get LLM Reflection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get LLM Reflection": {
+      "main": [
+        [
+          {
+            "node": "Format Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Notification": {
+      "main": [
+        [
+          {
+            "node": "Send to Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Reflection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Slack": {
+      "main": [
+        [
+          {
+            "node": "Completion Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Completion Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Reflection": {
+      "main": [
+        [
+          {
+            "node": "Completion Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completion Summary": {
+      "main": []
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-27T00:00:00.000Z",
+  "versionId": "1"
+}

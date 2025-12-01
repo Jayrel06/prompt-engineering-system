@@ -1,0 +1,70 @@
+{
+  "subreddits": [
+    {
+      "name": "PromptEngineering",
+      "enabled": true,
+      "description": "Dedicated prompt engineering discussions",
+      "filter_keywords": []
+    },
+    {
+      "name": "ChatGPT",
+      "enabled": true,
+      "description": "ChatGPT-specific prompts and techniques",
+      "filter_keywords": []
+    },
+    {
+      "name": "ClaudeAI",
+      "enabled": true,
+      "description": "Claude-specific content and techniques",
+      "filter_keywords": []
+    },
+    {
+      "name": "LocalLLaMA",
+      "enabled": true,
+      "description": "Local LLM and prompting techniques",
+      "filter_keywords": []
+    },
+    {
+      "name": "MachineLearning",
+      "enabled": true,
+      "description": "ML content filtered for prompt-related topics",
+      "filter_keywords": [
+        "prompt",
+        "prompting",
+        "gpt",
+        "llm",
+        "language model",
+        "claude",
+        "chatgpt",
+        "instruction",
+        "few-shot",
+        "zero-shot"
+      ]
+    },
+    {
+      "name": "artificial",
+      "enabled": true,
+      "description": "General AI discussions",
+      "filter_keywords": []
+    }
+  ],
+  "quality_thresholds": {
+    "min_score": 5,
+    "min_comments": 2,
+    "max_top_comments": 10
+  },
+  "rate_limiting": {
+    "delay_seconds": 2,
+    "max_retries": 3
+  },
+  "extraction": {
+    "extract_code_blocks": true,
+    "extract_prompts": true,
+    "max_prompts_per_post": 5
+  },
+  "output": {
+    "directory": "../../data/reddit",
+    "format": "json",
+    "pretty_print": true
+  }
+}

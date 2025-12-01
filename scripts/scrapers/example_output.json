@@ -1,0 +1,88 @@
+[
+  {
+    "id": "abc123",
+    "subreddit": "PromptEngineering",
+    "title": "My favorite Claude prompt template for technical writing",
+    "body": "I've been using this prompt template with great success:\n\n```\nYou are an expert technical writer with 10+ years of experience.\n\nTask: Write clear, concise documentation for [topic].\n\nContext:\n- Audience: [describe audience]\n- Purpose: [purpose]\n- Tone: Professional but approachable\n\nRequirements:\n- Use active voice\n- Include examples\n- Add headings and bullet points\n\nTopic: [your topic here]\n```\n\nThis works really well because it provides clear context and constraints.",
+    "url": "https://reddit.com/r/PromptEngineering/comments/abc123/",
+    "permalink": "https://reddit.com/r/PromptEngineering/comments/abc123/my_favorite_claude_prompt/",
+    "score": 156,
+    "num_comments": 23,
+    "created_utc": 1701234567,
+    "created_date": "2023-11-29T12:42:47",
+    "author": "prompt_engineer_42",
+    "flair": "Template",
+    "top_comments": [
+      {
+        "author": "ai_enthusiast",
+        "body": "This is great! I modified it slightly for code documentation:\n\n`You are a senior software engineer writing API documentation...`\n\nWorks perfectly with Claude!",
+        "score": 45,
+        "created_utc": 1701235000,
+        "id": "def456",
+        "extracted_code": [
+          "You are a senior software engineer writing API documentation..."
+        ],
+        "extracted_prompts": [
+          "You are a senior software engineer writing API documentation..."
+        ]
+      },
+      {
+        "author": "llm_researcher",
+        "body": "Have you tried adding few-shot examples? I find that helps with consistency.",
+        "score": 32,
+        "created_utc": 1701236000,
+        "id": "ghi789",
+        "extracted_code": [],
+        "extracted_prompts": []
+      }
+    ],
+    "extracted_code": [
+      "You are an expert technical writer with 10+ years of experience.\n\nTask: Write clear, concise documentation for [topic].\n\nContext:\n- Audience: [describe audience]\n- Purpose: [purpose]\n- Tone: Professional but approachable\n\nRequirements:\n- Use active voice\n- Include examples\n- Add headings and bullet points\n\nTopic: [your topic here]"
+    ],
+    "extracted_prompts": [
+      "You are an expert technical writer with 10+ years of experience.\n\nTask: Write clear, concise documentation for [topic].\n\nContext:\n- Audience: [describe audience]\n- Purpose: [purpose]\n- Tone: Professional but approachable\n\nRequirements:\n- Use active voice\n- Include examples\n- Add headings and bullet points\n\nTopic: [your topic here]"
+    ]
+  },
+  {
+    "id": "xyz789",
+    "subreddit": "ClaudeAI",
+    "title": "Claude's extended thinking feature works amazingly with this approach",
+    "body": "I discovered that if you structure your prompt like this, Claude uses extended thinking more effectively:\n\n\"Think through this step-by-step. For each step, explain your reasoning.\n\nProblem: [describe complex problem]\n\nSteps to consider:\n1. [step]\n2. [step]\n3. [step]\"\n\nThe key is giving it a framework to think within.",
+    "url": "https://reddit.com/r/ClaudeAI/comments/xyz789/",
+    "permalink": "https://reddit.com/r/ClaudeAI/comments/xyz789/claudes_extended_thinking/",
+    "score": 234,
+    "num_comments": 67,
+    "created_utc": 1701300000,
+    "created_date": "2023-11-30T06:53:20",
+    "author": "claude_fan_2024",
+    "flair": "Tips & Tricks",
+    "top_comments": [
+      {
+        "author": "reasoning_expert",
+        "body": "Yes! Chain-of-thought prompting is incredibly powerful. I also like adding:\n\n\"Before giving your final answer, review your reasoning for any logical errors.\"\n\nThis catches a lot of mistakes.",
+        "score": 89,
+        "created_utc": 1701301000,
+        "id": "comment1",
+        "extracted_code": [],
+        "extracted_prompts": [
+          "Before giving your final answer, review your reasoning for any logical errors."
+        ]
+      },
+      {
+        "author": "prompt_crafter",
+        "body": "For math problems, I use:\n\n```python\ndef solve_with_claude(problem):\n    prompt = f\"\"\"\n    Solve this step-by-step:\n    {problem}\n    \n    Show your work for each step.\n    \"\"\"\n    return claude.complete(prompt)\n```",
+        "score": 56,
+        "created_utc": 1701302000,
+        "id": "comment2",
+        "extracted_code": [
+          "def solve_with_claude(problem):\n    prompt = f\"\"\"\n    Solve this step-by-step:\n    {problem}\n    \n    Show your work for each step.\n    \"\"\"\n    return claude.complete(prompt)"
+        ],
+        "extracted_prompts": []
+      }
+    ],
+    "extracted_code": [],
+    "extracted_prompts": [
+      "Think through this step-by-step. For each step, explain your reasoning.\n\nProblem: [describe complex problem]\n\nSteps to consider:\n1. [step]\n2. [step]\n3. [step]"
+    ]
+  }
+]

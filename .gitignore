@@ -1,0 +1,84 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+
+# Qdrant data
+infrastructure/qdrant/storage/
+
+# LiteLLM
+infrastructure/litellm/logs/
+
+# Logs
+*.log
+logs/
+
+# Test outputs
+tests/output/
+.promptfoo/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Scraped data (keep in vector DB, not git)
+scripts/scrapers/data/
+scripts/scrapers/cache/
+
+# Personal context (optional - uncomment if keeping private)
+# context/identity/
+# context/business/
+# context/projects/
+
+# API cache
+.api_cache/

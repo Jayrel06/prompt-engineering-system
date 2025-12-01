@@ -1,0 +1,146 @@
+name: Prompt Engineering Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  unit-tests:
+    name: Python Unit Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('tests/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+
+    - name: Run unit tests
+      run: |
+        cd tests
+        pytest test_context_loader.py -v --tb=short --cov=. --cov-report=xml
+        pytest test_prompts.py -v --tb=short
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./tests/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  prompt-quality-tests:
+    name: Prompt Quality Tests (Promptfoo)
+    runs-on: ubuntu-latest
+
+    # Only run on main branch or manual trigger to save API costs
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Cache npm packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install promptfoo
+      run: npm install -g promptfoo
+
+    - name: Run promptfoo tests
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      run: |
+        npx promptfoo eval -c tests/promptfoo.yaml --no-progress-bar
+      continue-on-error: true  # Don't fail build on LLM test failures
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: promptfoo-results
+        path: tests/results/
+        retention-days: 30
+
+  integration-check:
+    name: Integration Check
+    runs-on: ubuntu-latest
+    needs: [unit-tests]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+
+    - name: Verify test fixtures exist
+      run: |
+        test -f tests/fixtures/sample_context.md
+        test -f tests/fixtures/sample_framework.md
+        test -f tests/fixtures/sample_template.md
+
+    - name: Verify context loader imports
+      run: |
+        cd tests
+        python -c "import sys; sys.path.insert(0, '../scripts'); from context_loader import load_file, find_framework, assemble_context"
+
+    - name: Run smoke tests
+      run: |
+        cd tests
+        pytest test_context_loader.py::TestLoadFile -v
+        pytest test_prompts.py::TestPromptStructure -v
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-check]
+    if: always()
+
+    steps:
+    - name: Check test results
+      run: |
+        echo "Unit Tests: ${{ needs.unit-tests.result }}"
+        echo "Integration Check: ${{ needs.integration-check.result }}"
+
+        if [[ "${{ needs.unit-tests.result }}" != "success" ]] || [[ "${{ needs.integration-check.result }}" != "success" ]]; then
+          echo "Tests failed!"
+          exit 1
+        fi
+
+        echo "All required tests passed!"

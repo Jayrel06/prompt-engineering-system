@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "prompt-engineering": {
+      "command": "node",
+      "args": [
+        "C:/Users/JRiel/prompt-engineering-system/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

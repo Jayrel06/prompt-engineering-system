@@ -1,0 +1,496 @@
+{
+  "name": "Scheduled GitHub Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger-github",
+      "name": "Every Monday at 3 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "cd \"C:/Users/JRiel/prompt-engineering-system/scripts/scrapers\" && python github_scraper.py --awesome --limit 50",
+        "options": {}
+      },
+      "id": "scrape-awesome-lists",
+      "name": "Scrape Awesome Lists",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        470,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "cd \"C:/Users/JRiel/prompt-engineering-system/scripts/scrapers\" && python github_scraper.py --topic prompt-engineering --min-stars 100 --limit 30",
+        "options": {}
+      },
+      "id": "scrape-top-repos",
+      "name": "Scrape Top Repos",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        470,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-awesome-count",
+              "name": "awesome_repos",
+              "value": "={{ $json.stdout.match(/Total repositories: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-awesome-prompts",
+              "name": "awesome_prompts",
+              "value": "={{ $json.stdout.match(/Total prompts extracted: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "awesome-status",
+              "name": "awesome_status",
+              "value": "={{ $json.exitCode === 0 ? 'success' : 'failed' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "parse-awesome-results",
+      "name": "Parse Awesome Lists Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        690,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-repos-count",
+              "name": "top_repos",
+              "value": "={{ $json.stdout.match(/Total repositories: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-prompts-count",
+              "name": "top_prompts",
+              "value": "={{ $json.stdout.match(/Total prompts extracted: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "repos-status",
+              "name": "repos_status",
+              "value": "={{ $json.exitCode === 0 ? 'success' : 'failed' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "parse-repos-results",
+      "name": "Parse Top Repos Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        690,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-results",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        910,
+        390
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "total-repos",
+              "name": "total_repos",
+              "value": "={{ Number($('Parse Awesome Lists Results').first().json.awesome_repos) + Number($('Parse Top Repos Results').first().json.top_repos) }}",
+              "type": "number"
+            },
+            {
+              "id": "total-prompts",
+              "name": "total_prompts",
+              "value": "={{ Number($('Parse Awesome Lists Results').first().json.awesome_prompts) + Number($('Parse Top Repos Results').first().json.top_prompts) }}",
+              "type": "number"
+            },
+            {
+              "id": "overall-status",
+              "name": "status",
+              "value": "={{ $('Parse Awesome Lists Results').first().json.awesome_status === 'success' && $('Parse Top Repos Results').first().json.repos_status === 'success' ? 'success' : 'partial' }}",
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "value": "github",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "calculate-totals",
+      "name": "Calculate Totals",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1130,
+        390
+      ]
+    },
+    {
+      "parameters": {
+        "command": "cd \"C:/Users/JRiel/prompt-engineering-system/scripts\" && python embed_output.py",
+        "options": {}
+      },
+      "id": "trigger-ingestion-github",
+      "name": "Trigger Ingestion Pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1350,
+        390
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL || $env.DISCORD_WEBHOOK_URL }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "=GitHub Scraper completed!\n\nRepositories scraped: {{ $json.total_repos }}\nPrompts extracted: {{ $json.total_prompts }}\nTime: {{ $json.timestamp }}\nStatus: {{ $json.status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-github-notification",
+      "name": "Send Completion Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1570,
+        390
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-awesome-success",
+              "leftValue": "={{ $json.exitCode }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "check-awesome-errors",
+      "name": "Check for Errors",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        690,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-repos-success",
+              "leftValue": "={{ $json.exitCode }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "check-repos-errors",
+      "name": "Check for Errors",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        690,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL || $env.DISCORD_WEBHOOK_URL }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "=GitHub Scraper Error!\n\nComponent: Awesome Lists\nError: {{ $json.stderr || 'Unknown error' }}\nTime: {{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-awesome-error",
+      "name": "Send Awesome Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        910,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL || $env.DISCORD_WEBHOOK_URL }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "=GitHub Scraper Error!\n\nComponent: Top Repos\nError: {{ $json.stderr || 'Unknown error' }}\nTime: {{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-repos-error",
+      "name": "Send Repos Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        910,
+        700
+      ]
+    }
+  ],
+  "connections": {
+    "Every Monday at 3 AM": {
+      "main": [
+        [
+          {
+            "node": "Scrape Awesome Lists",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Scrape Top Repos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Awesome Lists": {
+      "main": [
+        [
+          {
+            "node": "Parse Awesome Lists Results",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check for Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Top Repos": {
+      "main": [
+        [
+          {
+            "node": "Parse Top Repos Results",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check for Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Awesome Lists Results": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Top Repos Results": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Calculate Totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Totals": {
+      "main": [
+        [
+          {
+            "node": "Trigger Ingestion Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Ingestion Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Send Completion Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Errors": {
+      "main": [
+        [
+          {
+            "node": "Send Awesome Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Errors": {
+      "main": [
+        [
+          {
+            "node": "Send Repos Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "",
+    "timezone": "America/New_York",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "id": "scraper",
+      "name": "scraper"
+    },
+    {
+      "id": "github",
+      "name": "github"
+    },
+    {
+      "id": "scheduled",
+      "name": "scheduled"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-01T00:00:00.000Z",
+  "versionId": "1"
+}

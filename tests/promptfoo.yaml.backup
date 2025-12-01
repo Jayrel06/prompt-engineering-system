@@ -1,0 +1,132 @@
+# Prompt Engineering System - Quality Tests
+# Run with: npx promptfoo eval
+
+description: "Prompt Engineering System - Quality Tests"
+
+providers:
+  - id: anthropic:claude-sonnet-4-20250514
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  - id: anthropic:claude-haiku-4-5-20251001
+    config:
+      temperature: 0.5
+      max_tokens: 1024
+
+prompts:
+  - file://frameworks/planning/first-principles.md
+  - file://templates/voice-ai/receptionist-base.md
+
+defaultTest:
+  options:
+    provider: anthropic:claude-sonnet-4-20250514
+
+tests:
+  # ==========================================
+  # First Principles Framework Tests
+  # ==========================================
+
+  - description: "Should identify assumptions in business problem"
+    vars:
+      task: "Should I add a new service offering for social media management?"
+    assert:
+      - type: contains
+        value: "assumption"
+      - type: llm-rubric
+        value: "Response identifies at least 3 explicit assumptions about the market, resources, or capabilities"
+
+  - description: "Should challenge framing when appropriate"
+    vars:
+      task: "How do I get more clients?"
+    assert:
+      - type: llm-rubric
+        value: "Response questions whether 'more clients' is the right goal, or explores what kind of clients"
+
+  - description: "Should provide actionable first step"
+    vars:
+      task: "Should I build a mobile app for my service business?"
+    assert:
+      - type: llm-rubric
+        value: "Response ends with a specific, actionable first step or minimum viable test"
+
+  # ==========================================
+  # Voice AI Template Tests
+  # ==========================================
+
+  - description: "Should handle emergency correctly - gas smell"
+    vars:
+      customer_input: "I smell gas in my house"
+    assert:
+      - type: contains-any
+        value: ["emergency", "evacuate", "leave", "safety", "911"]
+      - type: not-contains
+        value: ["schedule", "appointment", "available"]
+
+  - description: "Should handle emergency correctly - no heat freezing"
+    vars:
+      customer_input: "My heater stopped working and it's below freezing outside"
+    assert:
+      - type: llm-rubric
+        value: "Response treats this as urgent/emergency and offers immediate assistance"
+
+  - description: "Should ask one question at a time"
+    vars:
+      customer_input: "I need to schedule a repair"
+    assert:
+      - type: llm-rubric
+        value: "Response contains exactly one question, not multiple questions in the same turn"
+
+  - description: "Should spell out numbers correctly"
+    vars:
+      customer_input: "How much does a service call cost?"
+    assert:
+      - type: llm-rubric
+        value: "Any numbers mentioned are spelled out (e.g., 'one hundred dollars' not '$100')"
+
+  - description: "Should not reveal AI nature"
+    vars:
+      customer_input: "Are you a real person or AI?"
+    assert:
+      - type: not-contains
+        value: ["AI", "artificial", "language model", "chatbot"]
+      - type: llm-rubric
+        value: "Response deflects the question without admitting to being AI"
+
+  # ==========================================
+  # Context Assembly Tests
+  # ==========================================
+
+  - description: "Should include relevant business context for planning"
+    vars:
+      task: "Plan Q1 marketing strategy"
+      mode: planning
+    assert:
+      - type: llm-rubric
+        value: "Response references business context like target markets, services, or positioning"
+
+  - description: "Should include technical context for technical tasks"
+    vars:
+      task: "Design a new n8n workflow for lead scoring"
+      mode: technical
+    assert:
+      - type: llm-rubric
+        value: "Response references existing infrastructure or technical patterns"
+
+  # ==========================================
+  # Edge Cases
+  # ==========================================
+
+  - description: "Should handle ambiguous input gracefully"
+    vars:
+      customer_input: "help"
+    assert:
+      - type: llm-rubric
+        value: "Response asks a clarifying question rather than making assumptions"
+
+  - description: "Should handle offensive input professionally"
+    vars:
+      customer_input: "This is stupid, let me talk to someone real"
+    assert:
+      - type: llm-rubric
+        value: "Response remains professional and offers to help or transfer"

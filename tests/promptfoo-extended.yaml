@@ -1,0 +1,75 @@
+# Prompt Engineering System - Extended Test Suite
+# Run with: npx promptfoo eval -c tests/promptfoo-extended.yaml
+
+description: "Extended Test Suite - Comprehensive Quality & Regression Tests"
+
+providers:
+  - id: anthropic:claude-sonnet-4-20250514
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  - id: anthropic:claude-haiku-4-5-20251001
+    config:
+      temperature: 0.5
+      max_tokens: 1024
+
+prompts:
+  - file://frameworks/planning/first-principles.md
+  - file://frameworks/planning/pre-mortem.md
+  - file://templates/voice-ai/receptionist-base.md
+
+defaultTest:
+  options:
+    provider: anthropic:claude-sonnet-4-20250514
+
+tests:
+  # Comprehensive test cases with regression tests and performance metrics
+  # See promptfoo.yaml for base test suite
+
+  # ==========================================
+  # Advanced First Principles Tests
+  # ==========================================
+
+  - description: "Should surface load-bearing assumptions"
+    vars:
+      task: "Should I expand to a second city?"
+    assert:
+      - type: llm-rubric
+        value: "Response identifies assumptions that would completely change the decision if wrong"
+      - type: contains-any
+        value: ["assumption", "critical", "depends"]
+
+  - description: "Should distinguish constraints from choices"
+    vars:
+      task: "I need to hire but can't afford anyone"
+    assert:
+      - type: llm-rubric
+        value: "Response challenges whether budget is truly a constraint or a prioritization choice"
+
+  # ==========================================
+  # Regression Tests
+  # ==========================================
+
+  - description: "REGRESSION: Should not over-apologize"
+    vars:
+      customer_input: "I need to reschedule my appointment"
+    assert:
+      - type: javascript
+        value: |
+          const apologiesCount = (output.match(/sorry|apologize/gi) || []).length;
+          return {
+            pass: apologiesCount <= 1,
+            score: apologiesCount <= 1 ? 1 : 0,
+            reason: `Found ${apologiesCount} apologies (should be 0-1)`
+          };
+
+  - description: "REGRESSION: Should not hallucinate business hours"
+    vars:
+      customer_input: "What are your hours?"
+    assert:
+      - type: llm-rubric
+        value: "Response either states hours from context or offers to check, doesn't make them up"
+
+outputPath: ./tests/results/extended-eval.json
+htmlOutputPath: ./tests/results/extended-eval.html

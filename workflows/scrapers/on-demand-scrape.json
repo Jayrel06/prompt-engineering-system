@@ -1,0 +1,508 @@
+{
+  "name": "On-Demand Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "scrape",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        400
+      ],
+      "webhookId": "prompt-scraper"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "get-source",
+              "name": "source",
+              "value": "={{ $json.body.source || 'both' }}",
+              "type": "string"
+            },
+            {
+              "id": "get-timeframe",
+              "name": "timeframe",
+              "value": "={{ $json.body.timeframe || 'week' }}",
+              "type": "string"
+            },
+            {
+              "id": "get-limit",
+              "name": "limit",
+              "value": "={{ Number($json.body.limit) || 50 }}",
+              "type": "number"
+            },
+            {
+              "id": "get-min-stars",
+              "name": "min_stars",
+              "value": "={{ Number($json.body.min_stars) || 50 }}",
+              "type": "number"
+            },
+            {
+              "id": "get-topic",
+              "name": "topic",
+              "value": "={{ $json.body.topic || 'prompt-engineering' }}",
+              "type": "string"
+            },
+            {
+              "id": "timestamp",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "parse-webhook-params",
+      "name": "Parse Webhook Parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        470,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "check-source-reddit",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "reddit",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "check-source-both",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "both",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "route-source",
+      "name": "Route by Source",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        690,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=cd \"C:/Users/JRiel/prompt-engineering-system/scripts/scrapers\" && python reddit_scraper.py --all --timeframe {{ $json.timeframe }} --limit {{ $json.limit }}",
+        "options": {}
+      },
+      "id": "execute-reddit-scraper-demand",
+      "name": "Execute Reddit Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        910,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=cd \"C:/Users/JRiel/prompt-engineering-system/scripts/scrapers\" && python github_scraper.py --topic {{ $json.topic }} --min-stars {{ $json.min_stars }} --limit {{ $json.limit }}",
+        "options": {}
+      },
+      "id": "execute-github-scraper-demand",
+      "name": "Execute GitHub Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        910,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "reddit-posts",
+              "name": "reddit_posts",
+              "value": "={{ $json.stdout.match(/Total posts scraped: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "reddit-status",
+              "name": "reddit_status",
+              "value": "={{ $json.exitCode === 0 ? 'success' : 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "reddit-output",
+              "name": "reddit_output",
+              "value": "={{ $json.stdout }}",
+              "type": "string"
+            },
+            {
+              "id": "reddit-error",
+              "name": "reddit_error",
+              "value": "={{ $json.stderr || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "parse-reddit-results-demand",
+      "name": "Parse Reddit Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1130,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "github-repos",
+              "name": "github_repos",
+              "value": "={{ $json.stdout.match(/Total repositories: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "github-prompts",
+              "name": "github_prompts",
+              "value": "={{ $json.stdout.match(/Total prompts extracted: (\\d+)/)?.[1] || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "github-status",
+              "name": "github_status",
+              "value": "={{ $json.exitCode === 0 ? 'success' : 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "github-output",
+              "name": "github_output",
+              "value": "={{ $json.stdout }}",
+              "type": "string"
+            },
+            {
+              "id": "github-error",
+              "name": "github_error",
+              "value": "={{ $json.stderr || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "parse-github-results-demand",
+      "name": "Parse GitHub Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1130,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-scraper-results",
+      "name": "Merge Scraper Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1350,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "response-status",
+              "name": "status",
+              "value": "=completed",
+              "type": "string"
+            },
+            {
+              "id": "response-timestamp",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "response-reddit",
+              "name": "reddit",
+              "value": "={{ {\n  status: $('Parse Reddit Results').first()?.json?.reddit_status || 'skipped',\n  posts: $('Parse Reddit Results').first()?.json?.reddit_posts || '0',\n  error: $('Parse Reddit Results').first()?.json?.reddit_error || ''\n} }}",
+              "type": "object"
+            },
+            {
+              "id": "response-github",
+              "name": "github",
+              "value": "={{ {\n  status: $('Parse GitHub Results').first()?.json?.github_status || 'skipped',\n  repos: $('Parse GitHub Results').first()?.json?.github_repos || '0',\n  prompts: $('Parse GitHub Results').first()?.json?.github_prompts || '0',\n  error: $('Parse GitHub Results').first()?.json?.github_error || ''\n} }}",
+              "type": "object"
+            },
+            {
+              "id": "response-message",
+              "name": "message",
+              "value": "=Scraping completed. Data saved to disk and ready for ingestion.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "build-response",
+      "name": "Build Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1570,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "command": "cd \"C:/Users/JRiel/prompt-engineering-system/scripts\" && python embed_output.py",
+        "options": {}
+      },
+      "id": "trigger-ingestion-demand",
+      "name": "Trigger Ingestion",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1570,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "send-webhook-response",
+      "name": "Send Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1790,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL || $env.DISCORD_WEBHOOK_URL }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "=On-Demand Scrape completed!\n\nSource: {{ $('Parse Webhook Parameters').first().json.source }}\nReddit: {{ $json.reddit.posts }} posts ({{ $json.reddit.status }})\nGitHub: {{ $json.github.repos }} repos, {{ $json.github.prompts }} prompts ({{ $json.github.status }})\nTime: {{ $json.timestamp }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-notification-demand",
+      "name": "Send Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1790,
+        550
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Webhook Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Webhook Parameters": {
+      "main": [
+        [
+          {
+            "node": "Route by Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Source": {
+      "main": [
+        [
+          {
+            "node": "Execute Reddit Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute GitHub Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute GitHub Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Reddit Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse Reddit Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute GitHub Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse GitHub Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Reddit Results": {
+      "main": [
+        [
+          {
+            "node": "Merge Scraper Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse GitHub Results": {
+      "main": [
+        [
+          {
+            "node": "Merge Scraper Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Scraper Results": {
+      "main": [
+        [
+          {
+            "node": "Build Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Trigger Ingestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Response": {
+      "main": [
+        [
+          {
+            "node": "Send Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Send Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "any",
+    "errorWorkflow": "",
+    "timezone": "America/New_York",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "id": "scraper",
+      "name": "scraper"
+    },
+    {
+      "id": "webhook",
+      "name": "webhook"
+    },
+    {
+      "id": "on-demand",
+      "name": "on-demand"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-01T00:00:00.000Z",
+  "versionId": "1"
+}

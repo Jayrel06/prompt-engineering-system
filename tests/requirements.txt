@@ -1,0 +1,28 @@
+# Testing Dependencies for Prompt Engineering System
+
+# Core testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+
+# Code quality and coverage
+coverage>=7.3.0
+
+# For testing async code (if needed in future)
+pytest-asyncio>=0.21.0
+
+# For better test output
+pytest-html>=3.2.0
+pytest-json-report>=1.5.0
+
+# For testing with fixtures
+pytest-fixtures>=0.1.0
+
+# For parameterized testing
+pytest-parametrize>=1.1.0
+
+# Optional: For testing with different Python versions
+tox>=4.6.0
+
+# Note: promptfoo is installed via npm, not pip
+# Install with: npm install -g promptfoo

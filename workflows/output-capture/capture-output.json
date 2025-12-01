@@ -1,0 +1,323 @@
+{
+  "name": "Capture Output",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/capture-output",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "capture-output-webhook"
+    },
+    {
+      "parameters": {
+        "content": "## Output Capture Flow\n\nThis workflow:\n1. Receives output capture requests\n2. Validates and enriches data\n3. Stores in vector DB for semantic search\n4. Appends to markdown log file\n5. Returns success confirmation",
+        "height": 180,
+        "width": 300,
+        "color": 5
+      },
+      "id": "sticky-note-1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "required-content",
+              "leftValue": "={{ $json.body.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"Missing required parameter: content\" } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enrich the output data with metadata\nconst body = $input.first().json.body;\nconst timestamp = new Date().toISOString();\nconst outputId = `output-${Date.now()}`;\n\nreturn {\n  id: outputId,\n  content: body.content,\n  tags: body.tags || [],\n  category: body.category || 'general',\n  source: body.source || 'manual',\n  timestamp: timestamp,\n  dateFormatted: new Date().toLocaleString('en-US', {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric',\n    hour: '2-digit',\n    minute: '2-digit'\n  })\n};"
+      },
+      "id": "enrich-data",
+      "name": "Enrich Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python C:/Users/JRiel/prompt-engineering-system/scripts/embed_output.py",
+        "arguments": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "store-in-vector-db",
+      "name": "Store in Vector DB",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        900,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format entry for markdown log\nconst data = $input.first().json;\n\nconst tagsFormatted = data.tags.length > 0 \n  ? data.tags.map(t => `#${t}`).join(' ') \n  : '';\n\nconst logEntry = `\n---\n\n### ${data.dateFormatted} ${tagsFormatted}\n\n**Category:** ${data.category}  \n**Source:** ${data.source}  \n**ID:** ${data.id}\n\n${data.content}\n\n`;\n\nreturn {\n  logEntry: logEntry,\n  filePath: 'C:/Users/JRiel/prompt-engineering-system/learnings/insights-log.md'\n};"
+      },
+      "id": "format-log-entry",
+      "name": "Format Log Entry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "command": "bash",
+        "arguments": "-c \"echo '{{ $json.logEntry }}' >> '{{ $json.filePath }}'\"",
+        "options": {}
+      },
+      "id": "append-to-log",
+      "name": "Append to Log",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Wait for both branches to complete\nconst enrichedData = $('Enrich Data').first().json;\nconst vectorDbResult = $('Store in Vector DB').first().json;\nconst logResult = $('Append to Log').first().json;\n\nreturn {\n  success: true,\n  message: \"Output captured successfully\",\n  data: {\n    id: enrichedData.id,\n    timestamp: enrichedData.timestamp,\n    category: enrichedData.category,\n    tags: enrichedData.tags,\n    stored_in_vector_db: vectorDbResult.exitCode === 0,\n    appended_to_log: logResult.exitCode === 0\n  }\n};"
+      },
+      "id": "merge-results",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle errors from any step\nconst error = $input.first().json;\n\nreturn {\n  success: false,\n  error: \"Failed to capture output\",\n  details: error.stderr || error.error || \"Unknown error\",\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "handle-error",
+      "name": "Handle Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "error-response-2",
+      "name": "Error Response 2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        360
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Enrich Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Data": {
+      "main": [
+        [
+          {
+            "node": "Store in Vector DB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Format Log Entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store in Vector DB": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Log Entry": {
+      "main": [
+        [
+          {
+            "node": "Append to Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Log": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Response": {
+      "main": []
+    },
+    "Error Response": {
+      "main": []
+    },
+    "Handle Error": {
+      "main": [
+        [
+          {
+            "node": "Error Response 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Response 2": {
+      "main": []
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-27T00:00:00.000Z",
+  "versionId": "1"
+}

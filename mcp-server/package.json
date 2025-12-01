@@ -1,0 +1,27 @@
+{
+  "name": "prompt-engineering-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for prompt engineering system",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "test": "node test-setup.js"
+  },
+  "keywords": [
+    "mcp",
+    "prompt-engineering",
+    "context-assembly"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
