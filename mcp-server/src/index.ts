@@ -249,6 +249,93 @@ const TOOLS: Tool[] = [
       required: ["content", "category"],
     },
   },
+  {
+    name: "improve_prompt",
+    description:
+      "Improve a prompt using AI-powered analysis and optimization. Returns an improved version with explanation of changes made.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: {
+          type: "string",
+          description: "The prompt to improve",
+        },
+        auto_fix: {
+          type: "boolean",
+          description: "Automatically apply fixes (default: true)",
+          default: true,
+        },
+      },
+      required: ["prompt"],
+    },
+  },
+  {
+    name: "diagnose_prompt",
+    description:
+      "Diagnose a prompt for issues and weaknesses. Returns detailed analysis with quality scores, identified issues, and suggestions for improvement.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: {
+          type: "string",
+          description: "The prompt to diagnose",
+        },
+      },
+      required: ["prompt"],
+    },
+  },
+  {
+    name: "optimize_prompt",
+    description:
+      "Generate multiple optimized variations of a prompt and return the best one. Uses different optimization techniques and scores each variation.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: {
+          type: "string",
+          description: "The prompt to optimize",
+        },
+        num_variations: {
+          type: "number",
+          description: "Number of variations to generate (default: 3)",
+          default: 3,
+          minimum: 1,
+          maximum: 10,
+        },
+      },
+      required: ["prompt"],
+    },
+  },
+  {
+    name: "get_prompting_best_practices",
+    description:
+      "Get prompting best practices and guidelines. Optionally filter by topic to get relevant sections.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        topic: {
+          type: "string",
+          description:
+            "Optional topic to filter best practices (e.g., 'examples', 'temperature', 'chain-of-thought', 'xml', 'formatting')",
+        },
+      },
+    },
+  },
+  {
+    name: "route_prompt",
+    description:
+      "Analyze a task and recommend the optimal prompting framework and techniques to use. Returns framework path, recommended techniques, and model suggestion.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        task: {
+          type: "string",
+          description: "The task description to analyze for routing",
+        },
+      },
+      required: ["task"],
+    },
+  },
 ];
 
 // Create the server
@@ -542,6 +629,250 @@ captured: ${new Date().toISOString()}
         };
       }
 
+      case "improve_prompt": {
+        const { prompt, auto_fix = true } = args as {
+          prompt: string;
+          auto_fix?: boolean;
+        };
+
+        // First diagnose the prompt
+        const doctorScript = path.join(SCRIPTS_DIR, "prompt_doctor.py");
+        const diagArgs = ["--diagnose", "-", "--json"];
+
+        if (auto_fix) {
+          diagArgs.push("--fix");
+        }
+
+        // Write prompt to temp file
+        const tmpDir = path.join(PROJECT_ROOT, ".tmp");
+        await fs.mkdir(tmpDir, { recursive: true });
+        const tmpFile = path.join(tmpDir, `prompt-${Date.now()}.txt`);
+        await fs.writeFile(tmpFile, prompt, "utf-8");
+
+        try {
+          // Run doctor with file input
+          const command = `python "${doctorScript}" --diagnose "${tmpFile}" --json${
+            auto_fix ? " --fix" : ""
+          }`;
+          const { stdout } = await execAsync(command, {
+            maxBuffer: 10 * 1024 * 1024,
+          });
+
+          // Parse diagnosis result
+          const diagnosis = JSON.parse(stdout);
+
+          // If auto_fix is true and there's an improved prompt, get it
+          let improvedPrompt = prompt;
+          let explanation = "";
+
+          if (auto_fix) {
+            // Run again to get the fixed prompt
+            const fixCommand = `python "${doctorScript}" --diagnose "${tmpFile}" --fix`;
+            const { stdout: fixedOutput } = await execAsync(fixCommand, {
+              maxBuffer: 10 * 1024 * 1024,
+            });
+
+            // Extract the fixed prompt from output
+            const fixedMatch = fixedOutput.match(
+              /FIXED PROMPT:\s*={50,}\s*([\s\S]+?)$/m
+            );
+            if (fixedMatch) {
+              improvedPrompt = fixedMatch[1].trim();
+            }
+
+            // Generate explanation based on issues found
+            const issues = diagnosis.issues || [];
+            if (issues.length > 0) {
+              explanation = `\n\nImprovements made:\n${issues
+                .map(
+                  (issue: any) =>
+                    `- Fixed ${issue.type}: ${issue.suggestion}`
+                )
+                .join("\n")}`;
+            }
+          }
+
+          const result = {
+            original: prompt,
+            improved: improvedPrompt,
+            quality_score: diagnosis.quality_score,
+            improvements: explanation,
+            issues_found: diagnosis.issues?.length || 0,
+          };
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        } finally {
+          // Clean up temp file
+          try {
+            await fs.unlink(tmpFile);
+          } catch {}
+        }
+      }
+
+      case "diagnose_prompt": {
+        const { prompt } = args as { prompt: string };
+
+        const scriptPath = path.join(SCRIPTS_DIR, "prompt_doctor.py");
+
+        // Write prompt to temp file
+        const tmpDir = path.join(PROJECT_ROOT, ".tmp");
+        await fs.mkdir(tmpDir, { recursive: true });
+        const tmpFile = path.join(tmpDir, `prompt-${Date.now()}.txt`);
+        await fs.writeFile(tmpFile, prompt, "utf-8");
+
+        try {
+          const command = `python "${scriptPath}" --diagnose "${tmpFile}" --json`;
+          const { stdout } = await execAsync(command, {
+            maxBuffer: 10 * 1024 * 1024,
+          });
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: stdout,
+              },
+            ],
+          };
+        } finally {
+          // Clean up temp file
+          try {
+            await fs.unlink(tmpFile);
+          } catch {}
+        }
+      }
+
+      case "optimize_prompt": {
+        const { prompt, num_variations = 3 } = args as {
+          prompt: string;
+          num_variations?: number;
+        };
+
+        const scriptPath = path.join(SCRIPTS_DIR, "prompt_optimizer.py");
+
+        // Write prompt to temp file
+        const tmpDir = path.join(PROJECT_ROOT, ".tmp");
+        await fs.mkdir(tmpDir, { recursive: true });
+        const tmpFile = path.join(tmpDir, `prompt-${Date.now()}.txt`);
+        await fs.writeFile(tmpFile, prompt, "utf-8");
+
+        try {
+          const command = `python "${scriptPath}" -p "${tmpFile}" -n ${num_variations}`;
+          const { stdout } = await execAsync(command, {
+            maxBuffer: 10 * 1024 * 1024,
+            timeout: 120000, // 2 minutes timeout for optimization
+          });
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: stdout,
+              },
+            ],
+          };
+        } finally {
+          // Clean up temp file
+          try {
+            await fs.unlink(tmpFile);
+          } catch {}
+        }
+      }
+
+      case "get_prompting_best_practices": {
+        const { topic } = args as { topic?: string };
+
+        const bestPracticesPath = path.join(
+          CONTEXT_DIR,
+          "technical",
+          "prompting-best-practices.md"
+        );
+
+        let content = await readFileContent(bestPracticesPath);
+
+        // Filter by topic if provided
+        if (topic) {
+          const topicLower = topic.toLowerCase();
+          const lines = content.split("\n");
+          const filtered: string[] = [];
+          let inRelevantSection = false;
+          let sectionLevel = 0;
+
+          filtered.push("# Prompting Best Practices - Filtered Results\n");
+          filtered.push(`**Topic:** ${topic}\n\n`);
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim().toLowerCase();
+
+            // Check for headers
+            const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
+
+            if (headerMatch) {
+              const level = headerMatch[1].length;
+              const headerText = headerMatch[2].toLowerCase();
+
+              if (headerText.includes(topicLower)) {
+                inRelevantSection = true;
+                sectionLevel = level;
+                filtered.push(line);
+              } else if (inRelevantSection && level <= sectionLevel) {
+                inRelevantSection = false;
+              } else if (inRelevantSection) {
+                filtered.push(line);
+              }
+            } else if (inRelevantSection || trimmed.includes(topicLower)) {
+              if (!inRelevantSection && trimmed.includes(topicLower)) {
+                inRelevantSection = true;
+                sectionLevel = 2;
+              }
+              filtered.push(line);
+            }
+          }
+
+          if (filtered.length > 3) {
+            content = filtered.join("\n");
+          } else {
+            content = `# Prompting Best Practices\n\nNo specific section found for "${topic}". Showing complete guide:\n\n${content}`;
+          }
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: content,
+            },
+          ],
+        };
+      }
+
+      case "route_prompt": {
+        const { task } = args as { task: string };
+
+        const scriptPath = path.join(SCRIPTS_DIR, "prompt_router.py");
+        const command = `python "${scriptPath}" "${task.replace(/"/g, '\\"')}"`;
+
+        const { stdout } = await execAsync(command, {
+          maxBuffer: 10 * 1024 * 1024,
+        });
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: stdout,
+            },
+          ],
+        };
+      }
       default:
         return {
           content: [
