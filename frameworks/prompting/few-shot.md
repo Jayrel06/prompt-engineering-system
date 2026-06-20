@@ -427,7 +427,7 @@ Answer:
 Instead of fixed examples, select examples most similar to the input:
 
 ```python
-# Pseudocode
+#Pseudocode
 def dynamic_few_shot(input_text, example_pool, k=3):
     # Calculate similarity between input and all examples
     similarities = [similarity(input_text, ex) for ex in example_pool]

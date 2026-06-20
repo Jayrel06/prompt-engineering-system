@@ -377,7 +377,7 @@ Quickly answer from five views:
 - Trying to please everyone
 - No clear point of view
 
-**Fix:** Return to your role and responsibility. You're here for a reason.
+**Fix:** Return to the role and responsibility you hold. You have a reason for being involved.
 
 ---
 
