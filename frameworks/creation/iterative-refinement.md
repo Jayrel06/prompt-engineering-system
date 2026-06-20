@@ -71,10 +71,10 @@ Severity: Critical / Important / Minor
 Fix issues one category at a time, highest impact first.
 
 **Priority order:**
-1. **Critical fixes:** Errors, major structural problems
-2. **Clarity improvements:** Make it understandable
-3. **Engagement enhancements:** Make it compelling
-4. **Polish:** Style, flow, word choice
+- **Critical fixes:** Errors, major structural problems
+- **Clarity improvements:** Make it understandable
+- **Engagement enhancements:** Make it compelling
+- **Polish:** Style, flow, word choice
 
 **For each improvement:**
 - Change one thing at a time

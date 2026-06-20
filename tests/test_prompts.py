@@ -16,6 +16,30 @@ FRAMEWORKS_DIR = PROJECT_ROOT / "frameworks"
 TEMPLATES_DIR = PROJECT_ROOT / "templates"
 
 
+def strip_fenced_code_blocks(content: str) -> str:
+    """Remove fenced examples so prose checks do not lint sample prompts/code."""
+    return re.sub(r'```.*?```', '', content, flags=re.DOTALL)
+
+
+def numbered_list_blocks(content: str) -> List[List[str]]:
+    """Return contiguous top-level numbered list blocks."""
+    blocks = []
+    current = []
+
+    for line in content.splitlines():
+        match = re.match(r'^(\d+)\.\s+', line)
+        if match:
+            current.append(match.group(1))
+        elif current:
+            blocks.append(current)
+            current = []
+
+    if current:
+        blocks.append(current)
+
+    return blocks
+
+
 class TestPromptStructure:
     """Test that prompts have required structural elements."""
 
@@ -242,12 +266,14 @@ class TestOutputFormatConsistency:
         frameworks = list(FRAMEWORKS_DIR.rglob("*.md"))
 
         for filepath in frameworks:
-            content = filepath.read_text(encoding='utf-8')
+            content = strip_fenced_code_blocks(filepath.read_text(encoding='utf-8'))
 
-            # Find numbered lists
-            numbered_items = re.findall(r'^(\d+)\.\s+', content, re.MULTILINE)
+            # Find each numbered list independently. Markdown files commonly
+            # contain several valid lists that restart at 1 in different sections.
+            for numbered_items in numbered_list_blocks(content):
+                if len(numbered_items) <= 1:
+                    continue
 
-            if len(numbered_items) > 1:
                 # Check if numbering is sequential or all 1s (both valid)
                 is_sequential = all(
                     int(numbered_items[i]) == i + 1
@@ -266,7 +292,7 @@ class TestOutputFormatConsistency:
         frameworks = list(FRAMEWORKS_DIR.rglob("*.md"))
 
         for filepath in frameworks:
-            content = filepath.read_text(encoding='utf-8')
+            content = strip_fenced_code_blocks(filepath.read_text(encoding='utf-8'))
 
             # Extract headers with their levels
             headers = re.findall(r'^(#{1,6})\s+(.+)$', content, re.MULTILINE)
@@ -356,7 +382,7 @@ class TestPromptQuality:
         ]
 
         for filepath in all_files:
-            content = filepath.read_text(encoding='utf-8').lower()
+            content = strip_fenced_code_blocks(filepath.read_text(encoding='utf-8')).lower()
 
             for pattern in placeholder_patterns:
                 assert not re.search(pattern, content), \
