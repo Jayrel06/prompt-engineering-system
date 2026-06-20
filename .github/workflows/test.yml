@@ -84,7 +84,7 @@ jobs:
       continue-on-error: true  # Don't fail build on LLM test failures
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: promptfoo-results
